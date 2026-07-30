@@ -13,6 +13,8 @@ func SetupRouter() *gin.Engine {
 	{
 		api.GET("/health", HealthCheck)
 		api.GET("/businesses", controller.GetBusinesses)
+		api.GET("/businesses", controller.GetBusinesses)
+api.POST("/businesses", controller.CreateBusiness)
 		api.GET("/categories", categorycontroller.GetCategories)
 		api.GET("/lgas", lgacontroller.GetLGAs)
 	}
