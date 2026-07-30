@@ -1,6 +1,9 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/smartx-web/idoma-connect/backend/internal/business/controller"
+	)
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
@@ -8,6 +11,7 @@ func SetupRouter() *gin.Engine {
 	api := router.Group("/api/v1")
 	{
 		api.GET("/health", HealthCheck)
+		api.GET("/businesses", controller.GetBusinesses)
 	}
 
 	return router
