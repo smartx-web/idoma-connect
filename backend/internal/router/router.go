@@ -2,20 +2,28 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/smartx-web/idoma-connect/backend/internal/business/controller"
-	"github.com/smartx-web/idoma-connect/backend/internal/category/controller"
-	)
+
+	businesscontroller "github.com/smartx-web/idoma-connect/backend/internal/business/controller"
+	categorycontroller "github.com/smartx-web/idoma-connect/backend/internal/category/controller"
+	lgacontroller "github.com/smartx-web/idoma-connect/backend/internal/lga/controller"
+)
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
 	api := router.Group("/api/v1")
 	{
+		// Health
 		api.GET("/health", HealthCheck)
-		api.GET("/businesses", controller.GetBusinesses)
-		api.GET("/businesses", controller.GetBusinesses)
-api.POST("/businesses", controller.CreateBusiness)
+
+		// Businesses
+		api.GET("/businesses", businesscontroller.GetBusinesses)
+		api.POST("/businesses", businesscontroller.CreateBusiness)
+
+		// Categories
 		api.GET("/categories", categorycontroller.GetCategories)
+
+		// LGAs
 		api.GET("/lgas", lgacontroller.GetLGAs)
 	}
 
