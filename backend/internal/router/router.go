@@ -14,6 +14,7 @@ func SetupRouter() *gin.Engine {
 		api.GET("/health", HealthCheck)
 		api.GET("/businesses", controller.GetBusinesses)
 		api.GET("/categories", categorycontroller.GetCategories)
+		api.GET("/lgas", lgacontroller.GetLGAs)
 	}
 
 	return router
