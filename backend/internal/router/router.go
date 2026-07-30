@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/smartx-web/idoma-connect/backend/internal/business/controller"
+	"github.com/smartx-web/idoma-connect/backend/internal/category/controller"
 	)
 
 func SetupRouter() *gin.Engine {
@@ -12,6 +13,7 @@ func SetupRouter() *gin.Engine {
 	{
 		api.GET("/health", HealthCheck)
 		api.GET("/businesses", controller.GetBusinesses)
+		api.GET("/categories", categorycontroller.GetCategories)
 	}
 
 	return router
