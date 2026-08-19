@@ -18,6 +18,7 @@ func SetupRouter() *gin.Engine {
 
 		// Businesses
 		api.GET("/businesses", businesscontroller.GetBusinesses)
+		api.GET("/businesses/:id", businesscontroller.GetBusinessByID)
 		api.POST("/businesses", businesscontroller.CreateBusiness)
 
 		// Categories
