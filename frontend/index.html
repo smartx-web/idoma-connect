@@ -1,53 +1,215 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IDOMA CONNECT</title>
-    <link rel="stylesheet" href="css/style.css">
+
+```
+<title>IDOMA-CONNECT | Discover. Connect. Experience Idoma.</title>
+
+<link rel="stylesheet" href="css/style.css">
+```
+
 </head>
+
 <body>
 
-<div class="container">
-
-    <header>
-        <h1>IDOMA <span>CONNECT</span></h1>
-        <p>The Digital Gateway to Idoma Land</p>
-    </header>
-
-    <div class="search-box">
-        <input type="text" placeholder="Search businesses...">
+```
+<!-- HEADER -->
+<header class="navbar">
+    <div class="logo">
+        <h2>IDOMA<span>-CONNECT</span></h2>
+        <small>The Digital Gateway to Idoma Land</small>
     </div>
 
-    <h2>Explore</h2>
+    <nav>
+        <a href="#explore">Explore</a>
+        <a href="#businesses">Businesses</a>
+        <a href="#heritage">Heritage</a>
+        <a href="#about">About</a>
+    </nav>
+</header>
+
+
+<!-- HERO SECTION -->
+<section class="hero">
+
+    <div class="hero-content">
+
+        <p class="welcome">WELCOME TO IDOMA-CONNECT</p>
+
+        <h1>
+            Discover.
+            <span>Connect.</span>
+            Experience Idoma.
+        </h1>
+
+        <p class="hero-text">
+            Discover businesses, places, culture, music and stories
+            from across Idoma Land — all in one place.
+        </p>
+
+        <!-- SEARCH -->
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search businesses, places or services..."
+            >
+
+            <button id="searchBtn">
+                Search
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- EXPLORE -->
+<section class="section" id="explore">
+
+    <div class="section-heading">
+        <p>EXPLORE IDOMA</p>
+        <h2>Everything Idoma, connected.</h2>
+    </div>
 
     <div class="grid">
 
-        <div class="card">
-            <h3>🏪</h3>
-            <p>Businesses</p>
+        <div class="card" onclick="openSection('businesses')">
+            <div class="card-icon">🏪</div>
+            <h3>Businesses</h3>
+            <p>
+                Find local businesses, services, shops and professionals.
+            </p>
+            <span>Explore →</span>
         </div>
 
-        <div class="card">
-            <h3>🏛️</h3>
-            <p>Heritage</p>
+
+        <div class="card" onclick="openSection('heritage')">
+            <div class="card-icon">🏛️</div>
+            <h3>Heritage & Tourism</h3>
+            <p>
+                Discover Idoma landmarks, history, attractions and culture.
+            </p>
+            <span>Discover →</span>
         </div>
 
-        <div class="card">
-            <h3>🤖</h3>
-            <p>Ask an Elder</p>
+
+        <div class="card" onclick="openSection('elder')">
+            <div class="card-icon">🤖</div>
+            <h3>Ask an Elder</h3>
+            <p>
+                Learn Idoma wisdom, proverbs, traditions and stories.
+            </p>
+            <span>Ask →</span>
         </div>
 
-        <div class="card">
-            <h3>🎵</h3>
-            <p>Idoma Sounds</p>
+
+        <div class="card" onclick="openSection('sounds')">
+            <div class="card-icon">🎵</div>
+            <h3>Idoma Sounds</h3>
+            <p>
+                Listen to and discover the sounds and music of Idoma.
+            </p>
+            <span>Listen →</span>
         </div>
 
     </div>
 
-</div>
+</section>
+
+
+<!-- FEATURED BUSINESSES -->
+<section class="section businesses-section" id="businesses">
+
+    <div class="section-heading">
+        <p>LOCAL DISCOVERY</p>
+        <h2>Featured Businesses</h2>
+    </div>
+
+    <div id="businessList" class="business-grid">
+
+        <!-- Businesses will be loaded from the API -->
+
+        <div class="loading">
+            Loading businesses...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- HERITAGE -->
+<section class="heritage-section" id="heritage">
+
+    <div class="heritage-content">
+
+        <p>OUR HERITAGE</p>
+
+        <h2>
+            More than a directory.
+            <br>
+            It's our identity.
+        </h2>
+
+        <p>
+            IDOMA-CONNECT brings together the people, businesses,
+            culture, history and stories that make Idoma Land unique.
+        </p>
+
+        <button onclick="openSection('heritage')">
+            Discover Idoma
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ABOUT -->
+<section class="section about-section" id="about">
+
+    <div class="section-heading">
+        <p>ABOUT IDOMA-CONNECT</p>
+
+        <h2>Built for Idoma. Connected to the world.</h2>
+
+        <p>
+            Starting from Otukpo and expanding across Idoma Land,
+            IDOMA-CONNECT is a digital platform designed to make
+            local discovery easier while preserving and promoting
+            Idoma culture.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+
+    <h2>IDOMA<span>-CONNECT</span></h2>
+
+    <p>
+        Discover. Connect. Experience Idoma.
+    </p>
+
+    <p class="copyright">
+        © 2026 IDOMA-CONNECT. Built with ❤️ for Idoma Land.
+    </p>
+
+</footer>
+
 
 <script src="js/app.js"></script>
+```
 
 </body>
 </html>
