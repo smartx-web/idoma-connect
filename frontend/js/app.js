@@ -1,0 +1,1 @@
+console.log("IDOMA CONNECT Frontend Loaded");
