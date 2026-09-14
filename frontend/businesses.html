@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Businesses | IDOMA-CONNECT</title>
+    <link rel="stylesheet" href="css/businesses.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">
+            <h2>IDOMA<span>-CONNECT</span></h2>
+            <small>Business Directory</small>
+        </div>
+
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="#">Heritage</a>
+            <a href="#">Ask an Elder</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Business Directory</h1>
+        <p>Discover trusted businesses across Idoma Land.</p>
+    </section>
+
+    <section class="filters">
+
+        <input
+            type="text"
+            placeholder="Search businesses..."
+            id="searchInput"
+        >
+
+        <select id="lgaFilter">
+            <option value="">All LGAs</option>
+            <option>Otukpo</option>
+            <option>Agatu</option>
+            <option>Apa</option>
+            <option>Oju</option>
+            <option>Okpokwu</option>
+            <option>Ogbadibo</option>
+            <option>Ohimini</option>
+            <option>Ado</option>
+            <option>Obi</option>
+        </select>
+
+        <select id="categoryFilter">
+            <option value="">All Categories</option>
+            <option>Hospital</option>
+            <option>Hotel</option>
+            <option>Restaurant</option>
+            <option>Pharmacy</option>
+            <option>School</option>
+            <option>Bank</option>
+            <option>Market</option>
+        </select>
+
+    </section>
+
+    <section class="directory">
+
+        <div class="business-grid">
+
+            <!-- Sample Card -->
+
+            <div class="business-card">
+
+                <img
+                    src="https://images.openai.com/static-rsc-4/AKQrOfUUsAB8fRTOJjiM4wqY.webp"
+                    alt="Royal Hospital"
+                >
+
+                <div class="content">
+
+                    <span class="badge">
+                        Hospital
+                    </span>
+
+                    <h3>
+                        Royal Specialist Hospital
+                    </h3>
+
+                    <p class="desc">
+                        24-hour specialist healthcare services in Otukpo.
+                    </p>
+
+                    <p>📍 Otukpo, Benue</p>
+
+                    <div class="actions">
+                        <a href="tel:07060784477" class="call">
+                            Call
+                        </a>
+
+                        <a href="#" class="whatsapp">
+                            WhatsApp
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+    <script src="js/businesses.js"></script>
+
+</body>
+</html>
