@@ -1,38 +1,39 @@
 package router
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	businesscontroller "github.com/smartx-web/idoma-connect/backend/internal/business/controller"
+	businessrepository "github.com/smartx-web/idoma-connect/backend/internal/business/repository"
 	categorycontroller "github.com/smartx-web/idoma-connect/backend/internal/category/controller"
 	lgacontroller "github.com/smartx-web/idoma-connect/backend/internal/lga/controller"
+
+	"github.com/gin-contrib/cors"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 	router := gin.Default()
 
-	// Allow the frontend to communicate with the API
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5500"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+		AllowOrigins: []string{"http://localhost:5500"},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Origin", "Content-Type", "Accept"},
 	}))
+
+	// Business dependencies
+	businessRepo := businessrepository.NewBusinessRepository(db)
+	businessController := businesscontroller.NewBusinessController(businessRepo)
 
 	api := router.Group("/api/v1")
 	{
-		// Health
 		api.GET("/health", HealthCheck)
 
-		// Businesses
-		api.GET("/businesses", businesscontroller.GetBusinesses)
-		api.GET("/businesses/:id", businesscontroller.GetBusinessByID)
-		api.POST("/businesses", businesscontroller.CreateBusiness)
+		api.GET("/businesses", businessController.GetBusinesses)
+		api.GET("/businesses/:id", businessController.GetBusinessByID)
+		api.POST("/businesses", businessController.CreateBusiness)
 
-		// Categories
 		api.GET("/categories", categorycontroller.GetCategories)
-
-		// LGAs
 		api.GET("/lgas", lgacontroller.GetLGAs)
 	}
 

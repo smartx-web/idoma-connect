@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -11,66 +11,77 @@ import (
 	"github.com/smartx-web/idoma-connect/backend/internal/business/repository"
 )
 
-func GetBusinesses(c *gin.Context) {
+type BusinessController struct {
+	Repository *repository.BusinessRepository
+}
+
+func NewBusinessController(repo *repository.BusinessRepository) *BusinessController {
+	return &BusinessController{
+		Repository: repo,
+	}
+}
+
+func (bc *BusinessController) GetBusinesses(c *gin.Context) {
 	lga := strings.TrimSpace(c.Query("lga"))
 	category := strings.TrimSpace(c.Query("category"))
 	search := strings.TrimSpace(c.Query("search"))
 
-	var results []model.Business
+	businesses, err := bc.Repository.GetBusinesses(
+		c.Request.Context(),
+		lga,
+		category,
+		search,
+	)
 
-	for _, business := range repository.Businesses {
+	if err != nil {
+		c.Error(err)
 
-		if lga != "" && !strings.EqualFold(business.LGA, lga) {
-			continue
-		}
-
-		if category != "" && !strings.EqualFold(business.Category, category) {
-			continue
-		}
-
-		if search != "" {
-			searchLower := strings.ToLower(search)
-			nameMatch := strings.Contains(strings.ToLower(business.Name), searchLower)
-			descriptionMatch := strings.Contains(strings.ToLower(business.Description), searchLower)
-
-			if !nameMatch && !descriptionMatch {
-				continue
-			}
-		}
-
-		results = append(results, business)
-	}
-
-	if results == nil {
-		results = []model.Business{}
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch businesses",
+			"error":   err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"count":   len(results),
-		"data":    results,
+		"count":   len(businesses),
+		"data":    businesses,
 	})
 }
-func GetBusinessByID(c *gin.Context) {
-	id := c.Param("id")
 
-	for _, business := range repository.Businesses {
-		if fmt.Sprintf("%d", business.ID) == id {
-			c.JSON(http.StatusOK, gin.H{
-				"success": true,
-				"data":    business,
-			})
-			return
-		}
+func (bc *BusinessController) GetBusinessByID(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid business ID",
+		})
+		return
 	}
 
-	c.JSON(http.StatusNotFound, gin.H{
-		"success": false,
-		"message": "Business not found",
+	business, err := bc.Repository.GetBusinessByID(
+		c.Request.Context(),
+		uint(id),
+	)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"success": false,
+			"message": "Business not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    business,
 	})
 }
 
-func CreateBusiness(c *gin.Context) {
+func (bc *BusinessController) CreateBusiness(c *gin.Context) {
 	var business model.Business
 
 	if err := c.ShouldBindJSON(&business); err != nil {
@@ -115,13 +126,22 @@ func CreateBusiness(c *gin.Context) {
 		return
 	}
 
-	business.ID = uint(len(repository.Businesses) + 1)
+	createdBusiness, err := bc.Repository.CreateBusiness(
+		c.Request.Context(),
+		business,
+	)
 
-	repository.Businesses = append(repository.Businesses, business)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to create business",
+		})
+		return
+	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
 		"message": "Business created successfully",
-		"data":    business,
+		"data":    createdBusiness,
 	})
 }
