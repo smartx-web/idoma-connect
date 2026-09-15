@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	businesscontroller "github.com/smartx-web/idoma-connect/backend/internal/business/controller"
@@ -10,6 +11,13 @@ import (
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
+
+	// Allow the frontend to communicate with the API
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5500"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+	}))
 
 	api := router.Group("/api/v1")
 	{
