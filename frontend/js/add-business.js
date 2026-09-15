@@ -17,22 +17,14 @@ form.addEventListener("submit", async (e) => {
 
         image_url: "",
         video_url: "",
-
-        // Temporary coordinates
         latitude: 7.1905,
         longitude: 8.1347,
-
-        // New businesses are unverified by default
         verified: false
     };
 
     const submitBtn = document.querySelector(".submit-btn");
-
     submitBtn.disabled = true;
     submitBtn.textContent = "Submitting...";
-
-    message.textContent = "";
-    message.style.color = "";
 
     try {
         const response = await fetch(API_URL, {
@@ -45,16 +37,9 @@ form.addEventListener("submit", async (e) => {
 
         const result = await response.json();
 
-        if (!response.ok) {
-            throw new Error(
-                result.message || "Failed to submit business"
-            );
-        }
-
         if (result.success) {
             message.style.color = "green";
-            message.textContent =
-                "Business submitted successfully! Redirecting...";
+            message.textContent = "Business listed successfully! Redirecting...";
 
             form.reset();
 
@@ -64,19 +49,15 @@ form.addEventListener("submit", async (e) => {
 
         } else {
             message.style.color = "red";
-            message.textContent =
-                result.message || "Submission failed.";
+            message.textContent = result.message || "Submission failed.";
         }
 
     } catch (error) {
-        console.error("Submission error:", error);
-
+        console.error(error);
         message.style.color = "red";
-        message.textContent =
-            error.message || "Unable to connect to the server.";
-
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit Business";
+        message.textContent = "Unable to connect to the server.";
     }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit Business";
 });
