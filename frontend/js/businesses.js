@@ -7,6 +7,7 @@ const category = document.getElementById("categoryFilter");
 
 let businesses = [];
 
+// Load businesses from Neon
 async function loadBusinesses() {
     grid.innerHTML = "<p>Loading businesses...</p>";
 
@@ -28,14 +29,16 @@ async function loadBusinesses() {
     }
 }
 
+// Render business cards
 function renderBusinesses(list) {
+
     if (list.length === 0) {
         grid.innerHTML = "<p>No businesses found.</p>";
         return;
     }
 
     grid.innerHTML = list.map(b => `
-        <div class="business-card">
+        <div class="business-card" onclick="openBusiness(${b.id})">
 
             <img
                 src="${b.image_url || 'images/placeholder.jpg'}"
@@ -52,7 +55,9 @@ function renderBusinesses(list) {
                     ${b.verified ? "✅" : ""}
                 </h3>
 
-                <p class="desc">${b.description || ""}</p>
+                <p class="desc">
+                    ${b.description || ""}
+                </p>
 
                 <p class="location">
                     📍 ${b.address || b.lga}
@@ -60,7 +65,11 @@ function renderBusinesses(list) {
 
                 <div class="actions">
 
-                    <a href="tel:${b.phone || ""}" class="call">
+                    <a
+                        href="tel:${b.phone || ""}"
+                        class="call"
+                        onclick="event.stopPropagation()"
+                    >
                         Call
                     </a>
 
@@ -68,6 +77,7 @@ function renderBusinesses(list) {
                         href="https://wa.me/${formatPhone(b.whatsapp)}"
                         target="_blank"
                         class="whatsapp"
+                        onclick="event.stopPropagation()"
                     >
                         WhatsApp
                     </a>
@@ -80,7 +90,9 @@ function renderBusinesses(list) {
     `).join("");
 }
 
+// Search & Filters
 function applyFilters() {
+
     const term = search.value.toLowerCase().trim();
 
     const filtered = businesses.filter(b => {
@@ -103,7 +115,14 @@ function applyFilters() {
     renderBusinesses(filtered);
 }
 
+// Open Business Details Page
+function openBusiness(id) {
+    window.location.href = `business.html?id=${id}`;
+}
+
+// Convert Nigerian number to WhatsApp format
 function formatPhone(number) {
+
     if (!number) return "";
 
     number = number.replace(/\D/g, "");
@@ -115,8 +134,10 @@ function formatPhone(number) {
     return number;
 }
 
+// Event listeners
 search.addEventListener("input", applyFilters);
 lga.addEventListener("change", applyFilters);
 category.addEventListener("change", applyFilters);
 
+// Initialize
 loadBusinesses();

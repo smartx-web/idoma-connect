@@ -1,0 +1,252 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f4f4;
+    color:#222;
+}
+
+/* Header */
+
+.header{
+    background:#111;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 30px;
+}
+
+.logo,
+.back-btn{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.back-btn:hover{
+    opacity:.8;
+}
+
+/* Main Container */
+
+.container{
+    max-width:900px;
+    margin:40px auto;
+    padding:20px;
+}
+
+/* Loading */
+
+#loading{
+    text-align:center;
+    font-size:18px;
+    color:#666;
+    padding:60px 0;
+}
+
+/* Business Card */
+
+.business-details{
+    background:white;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
+
+/* Business Image */
+
+.hero-image{
+    width:100%;
+    height:320px;
+    object-fit:cover;
+    background:#ddd;
+}
+
+/* Information */
+
+.info{
+    padding:30px;
+}
+
+/* Category */
+
+.badge{
+    display:inline-block;
+    background:#d71920;
+    color:white;
+    padding:6px 12px;
+    border-radius:30px;
+    font-size:13px;
+    margin-bottom:15px;
+}
+
+/* Business Name */
+
+h1{
+    font-size:32px;
+    margin-bottom:8px;
+}
+
+/* Verification */
+
+.verified{
+    color:#0a8f38;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+/* Description */
+
+.description{
+    color:#555;
+    line-height:1.7;
+    margin-bottom:25px;
+}
+
+/* Business Details */
+
+.details{
+    border-top:1px solid #eee;
+    border-bottom:1px solid #eee;
+    padding:20px 0;
+}
+
+.detail-row{
+    display:flex;
+    justify-content:space-between;
+    padding:12px 0;
+    gap:20px;
+}
+
+.detail-row strong{
+    color:#111;
+}
+
+/* Location */
+
+.location-section{
+    margin-top:25px;
+    padding:22px;
+    background:#f8f8f8;
+    border-radius:10px;
+    border:1px solid #eee;
+}
+
+.location-section h2{
+    font-size:20px;
+    margin-bottom:10px;
+}
+
+.location-section p{
+    color:#666;
+    margin-bottom:18px;
+}
+
+/* Interactive Map */
+
+#map{
+    width:100%;
+    height:350px;
+    border-radius:10px;
+    margin-bottom:18px;
+    overflow:hidden;
+    border:1px solid #ddd;
+}
+
+/* Map Button */
+
+.map-btn{
+    display:inline-block;
+    background:#d71920;
+    color:white;
+    text-decoration:none;
+    padding:11px 18px;
+    border-radius:7px;
+    font-weight:bold;
+}
+
+.map-btn:hover{
+    background:#b8141b;
+}
+
+/* Contact Actions */
+
+.actions{
+    display:flex;
+    gap:15px;
+    margin-top:25px;
+}
+
+.call-btn,
+.whatsapp-btn{
+    flex:1;
+    text-align:center;
+    text-decoration:none;
+    color:white;
+    padding:14px;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.call-btn{
+    background:#111;
+}
+
+.call-btn:hover{
+    background:#333;
+}
+
+.whatsapp-btn{
+    background:#25D366;
+}
+
+.whatsapp-btn:hover{
+    background:#1da851;
+}
+
+/* Mobile */
+
+@media(max-width:768px){
+
+    .header{
+        padding:18px;
+    }
+
+    .container{
+        margin:20px auto;
+        padding:15px;
+    }
+
+    .hero-image{
+        height:220px;
+    }
+
+    .info{
+        padding:22px;
+    }
+
+    h1{
+        font-size:26px;
+    }
+
+    .detail-row{
+        flex-direction:column;
+        gap:5px;
+    }
+
+    /* Smaller map on mobile */
+
+    #map{
+        height:260px;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+}

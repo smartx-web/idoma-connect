@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Business Details | IDOMA CONNECT</title>
+
+    <!-- Business page styles -->
+    <link
+        rel="stylesheet"
+        href="css/business.css"
+    >
+
+    <!-- Leaflet map styles -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<header class="header">
+
+    <a
+        href="index.html"
+        class="logo"
+    >
+        IDOMA CONNECT
+    </a>
+
+    <a
+        href="businesses.html"
+        class="back-btn"
+    >
+        ← Back
+    </a>
+
+</header>
+
+
+<section class="container">
+
+
+    <!-- Loading message -->
+
+    <div id="loading">
+        Loading business...
+    </div>
+
+
+    <!-- Business Details -->
+
+    <div
+        id="business"
+        class="business-details"
+        style="display:none;"
+    >
+
+
+        <!-- Business Image -->
+
+        <img
+            id="businessImage"
+            class="hero-image"
+            src=""
+            alt="Business Image"
+        >
+
+
+        <div class="info">
+
+
+            <!-- Category -->
+
+            <span
+                id="category"
+                class="badge"
+            ></span>
+
+
+            <!-- Business Name -->
+
+            <h1 id="name"></h1>
+
+
+            <!-- Verification Status -->
+
+            <p
+                id="verified"
+                class="verified"
+            ></p>
+
+
+            <!-- Description -->
+
+            <p
+                id="description"
+                class="description"
+            ></p>
+
+
+            <!-- Business Information -->
+
+            <div class="details">
+
+
+                <div class="detail-row">
+
+                    <strong>📍 Address</strong>
+
+                    <span id="address"></span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>🏛 LGA</strong>
+
+                    <span id="lga"></span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>📞 Phone</strong>
+
+                    <span id="phone"></span>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- Location -->
+
+            <div class="location-section">
+
+
+                <h2>
+                    📍 Location
+                </h2>
+
+
+                <p id="locationText">
+                    Loading location...
+                </p>
+
+
+                <!-- Interactive Map -->
+
+                <div id="map"></div>
+
+
+                <!-- External Map -->
+
+                <a
+                    id="mapBtn"
+                    class="map-btn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    View on Google Maps
+                </a>
+
+
+            </div>
+
+
+            <!-- Contact Actions -->
+
+            <div class="actions">
+
+
+                <a
+                    id="callBtn"
+                    class="call-btn"
+                >
+                    Call Business
+                </a>
+
+
+                <a
+                    id="whatsappBtn"
+                    class="whatsapp-btn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    WhatsApp
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Leaflet JavaScript -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<!-- Our Business JavaScript -->
+
+<script src="js/business.js"></script>
+
+
+</body>
+
+</html>
