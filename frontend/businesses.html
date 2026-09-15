@@ -1,112 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Businesses | IDOMA-CONNECT</title>
-    <link rel="stylesheet" href="css/businesses.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Business Directory | IDOMA CONNECT</title>
+  <link rel="stylesheet" href="css/businesses.css" />
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="logo">
-            <h2>IDOMA<span>-CONNECT</span></h2>
-            <small>Business Directory</small>
-        </div>
+  <header class="header">
+    <div class="logo">
+      <a href="index.html">IDOMA CONNECT</a>
+    </div>
 
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="#">Heritage</a>
-            <a href="#">Ask an Elder</a>
-        </nav>
-    </header>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="add-business.html" class="nav-btn">+ List Your Business</a>
+    </nav>
+  </header>
 
-    <section class="hero">
-        <h1>Business Directory</h1>
-        <p>Discover trusted businesses across Idoma Land.</p>
-    </section>
+  <section class="hero">
+    <h1>Business Directory</h1>
+    <p>Discover verified businesses across the 9 LGAs of Idoma Land.</p>
+  </section>
 
-    <section class="filters">
+  <main class="container">
 
-        <input
-            type="text"
-            placeholder="Search businesses..."
-            id="searchInput"
-        >
+    <a href="add-business.html" class="add-business-btn">
+      + List Your Business
+    </a>
 
-        <select id="lgaFilter">
-            <option value="">All LGAs</option>
-            <option>Otukpo</option>
-            <option>Agatu</option>
-            <option>Apa</option>
-            <option>Oju</option>
-            <option>Okpokwu</option>
-            <option>Ogbadibo</option>
-            <option>Ohimini</option>
-            <option>Ado</option>
-            <option>Obi</option>
-        </select>
+    <div class="filters">
 
-        <select id="categoryFilter">
-            <option value="">All Categories</option>
-            <option>Hospital</option>
-            <option>Hotel</option>
-            <option>Restaurant</option>
-            <option>Pharmacy</option>
-            <option>School</option>
-            <option>Bank</option>
-            <option>Market</option>
-        </select>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search businesses..."
+      />
 
-    </section>
+      <select id="categoryFilter">
+        <option value="">All Categories</option>
+        <option value="Hospital">Hospital</option>
+        <option value="Pharmacy">Pharmacy</option>
+        <option value="Hotel">Hotel</option>
+        <option value="Restaurant">Restaurant</option>
+        <option value="School">School</option>
+        <option value="Market">Market</option>
+        <option value="Boutique">Boutique</option>
+        <option value="Salon">Salon</option>
+        <option value="Tourist Attraction">Tourist Attraction</option>
+      </select>
 
-    <section class="directory">
+      <select id="lgaFilter">
+        <option value="">All LGAs</option>
+        <option value="Otukpo">Otukpo</option>
+        <option value="Agatu">Agatu</option>
+        <option value="Apa">Apa</option>
+        <option value="Ado">Ado</option>
+        <option value="Obi">Obi</option>
+        <option value="Oju">Oju</option>
+        <option value="Ohimini">Ohimini</option>
+        <option value="Ogbadibo">Ogbadibo</option>
+        <option value="Okpokwu">Okpokwu</option>
+      </select>
 
-        <div class="business-grid">
+    </div>
 
-            <!-- Sample Card -->
+    <div class="business-grid">
+      <!-- Businesses load dynamically from Neon -->
+    </div>
 
-            <div class="business-card">
+  </main>
 
-                <img
-                    src="https://images.openai.com/static-rsc-4/AKQrOfUUsAB8fRTOJjiM4wqY.webp"
-                    alt="Royal Hospital"
-                >
+  <footer class="footer">
+    <p>© 2026 IDOMA CONNECT • The Digital Gateway to Idoma Land</p>
+  </footer>
 
-                <div class="content">
-
-                    <span class="badge">
-                        Hospital
-                    </span>
-
-                    <h3>
-                        Royal Specialist Hospital
-                    </h3>
-
-                    <p class="desc">
-                        24-hour specialist healthcare services in Otukpo.
-                    </p>
-
-                    <p>📍 Otukpo, Benue</p>
-
-                    <div class="actions">
-                        <a href="tel:07060784477" class="call">
-                            Call
-                        </a>
-
-                        <a href="#" class="whatsapp">
-                            WhatsApp
-                        </a>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-    <script src="js/businesses.js"></script>
+  <script src="js/businesses.js"></script>
 
 </body>
 </html>

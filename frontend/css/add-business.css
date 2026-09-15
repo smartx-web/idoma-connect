@@ -1,0 +1,93 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f4f4;
+}
+
+.header{
+    background:#111;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 25px;
+}
+
+.logo{
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:20px;
+}
+
+.back-btn{
+    color:white;
+    text-decoration:none;
+}
+
+.container{
+    max-width:700px;
+    margin:40px auto;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+}
+
+h1{
+    color:#d71920;
+    margin-bottom:8px;
+}
+
+.subtitle{
+    color:#666;
+    margin-bottom:25px;
+}
+
+label{
+    display:block;
+    margin-top:18px;
+    margin-bottom:8px;
+    font-weight:bold;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:15px;
+}
+
+textarea{
+    resize:vertical;
+}
+
+.submit-btn{
+    width:100%;
+    margin-top:30px;
+    background:#d71920;
+    color:white;
+    border:none;
+    padding:14px;
+    border-radius:6px;
+    font-size:16px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.submit-btn:hover{
+    background:#b8141b;
+}
+
+#message{
+    margin-top:20px;
+    text-align:center;
+    font-weight:bold;
+}

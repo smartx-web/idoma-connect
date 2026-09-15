@@ -26,7 +26,19 @@ go.work.sum
 
 # env file
 .env
+DATABASE_URL=postgresql://neondb_owner:npg_4Ipm9sgHatdw@ep-quiet-boat-aebwmn3k-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+APP_NAME=
+APP_ENV=
+APP_PORT=
 
-# Editor/IDE
-# .idea/
-# .vscode/
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+
+JWT_SECRET=
+
+#env
+PGUSER=neondb_owner
+PGPASSWORD=npg_4Ipm9sgHatdw

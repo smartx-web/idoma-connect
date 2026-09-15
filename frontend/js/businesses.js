@@ -1,78 +1,122 @@
-const businesses = [
-  {
-    id: 1,
-    name: "Royal Specialist Hospital",
-    category: "Hospital",
-    lga: "Otukpo",
-    address: "No. 12 Otukpo Road, Otukpo",
-    phone: "07060784477",
-    whatsapp: "07060784477",
-    description: "24-hour specialist healthcare services.",
-    image: "images/royal.jpg",
-    verified: true
-  },
-  {
-    id: 2,
-    name: "MB Electronics",
-    category: "Market",
-    lga: "Otukpo",
-    address: "Otukpo Main Market",
-    phone: "08031234567",
-    whatsapp: "08031234567",
-    description: "Phones, accessories and electronics.",
-    image: "images/electronics.jpg",
-    verified: false
-  }
-];
+const API_URL = "http://localhost:8080/api/v1/businesses";
 
 const grid = document.querySelector(".business-grid");
 const search = document.getElementById("searchInput");
 const lga = document.getElementById("lgaFilter");
 const category = document.getElementById("categoryFilter");
 
-function render(list) {
-  grid.innerHTML = "";
+let businesses = [];
 
-  if (list.length === 0) {
-    grid.innerHTML = "<p>No business found.</p>";
-    return;
-  }
+async function loadBusinesses() {
+    grid.innerHTML = "<p>Loading businesses...</p>";
 
-  list.forEach(b => {
-    grid.innerHTML += `
-      <div class="business-card">
-        <img src="${b.image}" alt="${b.name}">
-        <div class="content">
-          <span class="badge">${b.category}</span>
-          <h3>${b.name} ${b.verified ? "✅" : ""}</h3>
-          <p class="desc">${b.description}</p>
-          <p>📍 ${b.address}</p>
+    try {
+        const response = await fetch(API_URL);
+        const result = await response.json();
 
-          <div class="actions">
-            <a href="tel:${b.phone}" class="call">Call</a>
-            <a href="https://wa.me/234${b.whatsapp.slice(1)}" class="whatsapp" target="_blank">WhatsApp</a>
-          </div>
+        businesses = result.data || [];
+        renderBusinesses(businesses);
+
+    } catch (error) {
+        console.error(error);
+
+        grid.innerHTML = `
+            <p style="color:red;">
+                Unable to connect to the API.
+            </p>
+        `;
+    }
+}
+
+function renderBusinesses(list) {
+    if (list.length === 0) {
+        grid.innerHTML = "<p>No businesses found.</p>";
+        return;
+    }
+
+    grid.innerHTML = list.map(b => `
+        <div class="business-card">
+
+            <img
+                src="${b.image_url || 'images/placeholder.jpg'}"
+                alt="${b.name}"
+                onerror="this.src='images/placeholder.jpg'"
+            >
+
+            <div class="content">
+
+                <span class="badge">${b.category}</span>
+
+                <h3>
+                    ${b.name}
+                    ${b.verified ? "✅" : ""}
+                </h3>
+
+                <p class="desc">${b.description || ""}</p>
+
+                <p class="location">
+                    📍 ${b.address || b.lga}
+                </p>
+
+                <div class="actions">
+
+                    <a href="tel:${b.phone || ""}" class="call">
+                        Call
+                    </a>
+
+                    <a
+                        href="https://wa.me/${formatPhone(b.whatsapp)}"
+                        target="_blank"
+                        class="whatsapp"
+                    >
+                        WhatsApp
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
-      </div>
-    `;
-  });
+    `).join("");
 }
 
-function filterBusinesses() {
-  const term = search.value.toLowerCase();
+function applyFilters() {
+    const term = search.value.toLowerCase().trim();
 
-  const filtered = businesses.filter(b =>
-    (b.name.toLowerCase().includes(term) ||
-     b.description.toLowerCase().includes(term)) &&
-    (lga.value === "" || b.lga === lga.value) &&
-    (category.value === "" || b.category === category.value)
-  );
+    const filtered = businesses.filter(b => {
 
-  render(filtered);
+        const matchesSearch =
+            (b.name || "").toLowerCase().includes(term) ||
+            (b.description || "").toLowerCase().includes(term);
+
+        const matchesLGA =
+            lga.value === "" || b.lga === lga.value;
+
+        const matchesCategory =
+            category.value === "" || b.category === category.value;
+
+        return matchesSearch &&
+               matchesLGA &&
+               matchesCategory;
+    });
+
+    renderBusinesses(filtered);
 }
 
-search.addEventListener("input", filterBusinesses);
-lga.addEventListener("change", filterBusinesses);
-category.addEventListener("change", filterBusinesses);
+function formatPhone(number) {
+    if (!number) return "";
 
-render(businesses);
+    number = number.replace(/\D/g, "");
+
+    if (number.startsWith("0")) {
+        return "234" + number.substring(1);
+    }
+
+    return number;
+}
+
+search.addEventListener("input", applyFilters);
+lga.addEventListener("change", applyFilters);
+category.addEventListener("change", applyFilters);
+
+loadBusinesses();
