@@ -16,6 +16,7 @@
 <div class="container">
 
     <h1>List Your Business</h1>
+
     <p class="subtitle">
         Join the largest digital directory for businesses across Idoma Land.
     </p>
@@ -64,6 +65,17 @@
 
         <label>WhatsApp</label>
         <input type="text" id="whatsapp" required>
+
+        <label>Business Image</label>
+        <input type="file" id="image" accept="image/*">
+
+        <img
+            id="preview"
+            class="image-preview"
+            src=""
+            alt="Business Preview"
+            style="display:none;"
+        >
 
         <button type="submit" class="submit-btn">
             Submit Business
