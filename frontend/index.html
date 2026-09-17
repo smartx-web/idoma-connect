@@ -17,6 +17,7 @@
     rel="stylesheet"
     href="css/style.css"
 >
+<link rel="stylesheet" href="css/home-spotlight.css">
 
 </head>
 
@@ -65,46 +66,223 @@
 
 </header>
 
-<!-- ================= HERO ================= -->
+<!-- ================= HOMEPAGE SPOTLIGHT ================= -->
 
-<section class="hero">
+<section class="hero spotlight">
 
-<div class="hero-content">
+<!-- ================= WELCOME ================= -->
 
-    <p class="welcome">
-        WELCOME TO IDOMA LAND
-    </p>
+<div class="spotlight-slide active">
 
-    <h1>
-        Discover.
-        <span>Connect.</span>
-        Experience Idoma.
-    </h1>
+    <div class="spotlight-content">
 
-    <p class="hero-text">
-        Explore businesses, culture, tourism, music and the rich
-        heritage of the Idoma people—all from one digital platform.
-    </p>
+        <p class="spotlight-label">
+            WELCOME TO IDOMA LAND
+        </p>
+
+        <h1>
+            Discover.
+            <span>Connect.</span>
+            Experience Idoma.
+        </h1>
+
+        <p class="spotlight-text">
+            Explore businesses, culture, tourism, music and
+            the rich heritage of Idoma people—all from one
+            digital platform.
+        </p>
 
 
-    <div class="search-box">
+        <div class="spotlight-search">
 
-        <input
-            type="text"
-            placeholder="Search businesses, places or services..."
-        >
+            <input
+                type="text"
+                id="homeSearch"
+                placeholder="Search businesses, places or services..."
+            >
 
-        <button
-            onclick="window.location.href='businesses.html'"
-        >
-            Search
-        </button>
+            <button
+                onclick="searchFromHome()"
+            >
+                Search
+            </button>
+
+        </div>
 
     </div>
 
 </div>
 
+
+
+<!-- ================= NEWS ================= -->
+
+<div class="spotlight-slide">
+
+    <div class="spotlight-content">
+
+        <p class="spotlight-label">
+            HAPPENING IN IDOMA LAND
+        </p>
+
+        <div class="spotlight-card">
+
+            <h2>
+                Stay Connected With Idoma
+            </h2>
+
+            <p>
+                Discover events, community activities,
+                announcements and stories from across
+                Idoma Land.
+            </p>
+
+            <a
+                href="heritage.html"
+                class="spotlight-button"
+            >
+                Explore Idoma Stories →
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= ADVERTISEMENT ================= -->
+
+<div class="spotlight-slide">
+
+    <div class="spotlight-content">
+
+        <p class="spotlight-label">
+            FEATURED BUSINESS
+        </p>
+
+        <div class="spotlight-card">
+
+            <h2>
+                Put Your Business in the Spotlight
+            </h2>
+
+            <p>
+                Reach customers across Idoma Land.
+                List your business on IDOMA-CONNECT
+                and connect with people looking for
+                your products and services.
+            </p>
+
+            <a
+                href="add-business.html"
+                class="spotlight-button"
+            >
+                List Your Business →
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= HERITAGE ================= -->
+
+<div class="spotlight-slide">
+
+    <div class="spotlight-content">
+
+        <p class="spotlight-label">
+            THE LIVING HERITAGE OF THE IDOMA PEOPLE
+        </p>
+
+        <div class="spotlight-card">
+
+            <h2>
+                More Than a Directory.
+                It's Our Identity.
+            </h2>
+
+            <p>
+                Explore the history, traditions, food,
+                festivals, people and places that continue
+                to shape Idoma Land.
+            </p>
+
+            <a
+                href="heritage.html"
+                class="spotlight-button"
+            >
+                Discover Heritage →
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= SLIDER DOTS ================= -->
+
+<div class="spotlight-dots">
+
+    <button
+        class="spotlight-dot active"
+        aria-label="Welcome"
+    ></button>
+
+    <button
+        class="spotlight-dot"
+        aria-label="News"
+    ></button>
+
+    <button
+        class="spotlight-dot"
+        aria-label="Advertisement"
+    ></button>
+
+    <button
+        class="spotlight-dot"
+        aria-label="Heritage"
+    ></button>
+
+</div>
+```
+
 </section>
+
+<script>
+
+function searchFromHome() {
+
+    const input =
+        document.getElementById("homeSearch");
+
+    const query =
+        input.value.trim();
+
+    if (query) {
+
+        window.location.href =
+            "businesses.html?search=" +
+            encodeURIComponent(query);
+
+    } else {
+
+        window.location.href =
+            "businesses.html";
+
+    }
+
+}
+
+</script>
 
 <!-- ================= EXPLORE ================= -->
 
@@ -351,6 +529,7 @@
 </p>
 
 </footer>
+<script src="js/home.js"></script>
 
 </body>
 

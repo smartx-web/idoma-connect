@@ -6,6 +6,12 @@ const lga = document.getElementById("lgaFilter");
 const category = document.getElementById("categoryFilter");
 
 let businesses = [];
+const urlParams = new URLSearchParams(window.location.search);
+const initialSearch = urlParams.get("search");
+
+if (initialSearch) {
+    search.value = initialSearch;
+}
 
 // Load businesses from Neon
 async function loadBusinesses() {
@@ -139,5 +145,8 @@ search.addEventListener("input", applyFilters);
 lga.addEventListener("change", applyFilters);
 category.addEventListener("change", applyFilters);
 
-// Initialize
-loadBusinesses();
+loadBusinesses().then(() => {
+    if (initialSearch) {
+        applyFilters();
+    }
+});
