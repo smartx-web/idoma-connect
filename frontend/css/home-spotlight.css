@@ -220,6 +220,66 @@ line-height: 1.7;
 margin-bottom: 22px;
 
 }
+/* =========================================
+FEATURED BUSINESS
+========================================= */
+
+.featured-business-image {
+    width: 100%;
+    max-width: 420px;
+    height: 190px;
+
+    object-fit: cover;
+
+    display: block;
+
+    margin: 0 auto 20px;
+
+    border-radius: 10px;
+}
+
+.featured-category {
+    display: inline-block;
+
+    background: #d71920;
+    color: white;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    margin-bottom: 12px;
+}
+
+.featured-location {
+    color: #aaa !important;
+
+    font-size: 14px;
+
+    margin-top: -8px;
+}
+
+#featuredBusiness {
+    overflow: hidden;
+
+    transition:
+        transform 0.3s ease,
+        border-color 0.3s ease;
+
+}
+
+#featuredBusiness:hover {
+    transform: translateY(-3px);
+
+    border-color: rgba(215, 25, 32, 0.5);
+}
 
 /* =========================================
 SLIDER DOTS
@@ -297,6 +357,17 @@ MOBILE
 
 .spotlight-card h2 {
     font-size: 26px;
+}
+.featured-business-image {
+    height: 160px;
+}
+
+.featured-category {
+    font-size: 11px;
+}
+
+#featuredBusiness {
+    padding: 20px 16px;
 }
 
 
