@@ -7,6 +7,8 @@ import (
 	businesscontroller "github.com/smartx-web/idoma-connect/backend/internal/business/controller"
 	businessrepository "github.com/smartx-web/idoma-connect/backend/internal/business/repository"
 	categorycontroller "github.com/smartx-web/idoma-connect/backend/internal/category/controller"
+	happeningcontroller "github.com/smartx-web/idoma-connect/backend/internal/happening/controller"
+	happeningrepository "github.com/smartx-web/idoma-connect/backend/internal/happening/repository"
 	lgacontroller "github.com/smartx-web/idoma-connect/backend/internal/lga/controller"
 
 	"github.com/gin-contrib/cors"
@@ -24,6 +26,9 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 	// Business dependencies
 	businessRepo := businessrepository.NewBusinessRepository(db)
 	businessController := businesscontroller.NewBusinessController(businessRepo)
+	// Happening dependencies
+	happeningRepo := happeningrepository.NewHappeningRepository(db)
+	happeningController := happeningcontroller.NewHappeningController(happeningRepo)
 
 	api := router.Group("/api/v1")
 	{
@@ -35,6 +40,7 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 
 		api.GET("/categories", categorycontroller.GetCategories)
 		api.GET("/lgas", lgacontroller.GetLGAs)
+		api.GET("/happenings", happeningController.GetAll)
 	}
 
 	return router
