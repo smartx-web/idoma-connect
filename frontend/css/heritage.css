@@ -495,3 +495,34 @@ nav {
 }
 
 }
+/* ================= HERITAGE IMAGES ================= */
+
+.heritage-image {
+    width: 100%;
+    height: 280px;
+
+    object-fit: cover;
+
+    display: block;
+
+    border-radius: 10px;
+
+    margin-bottom: 22px;
+}
+
+/* Slightly shorter image for food/cultural blocks */
+
+.culture-block .heritage-image {
+    max-width: 850px;
+}
+
+/* ================= MOBILE HERITAGE IMAGES ================= */
+
+@media (max-width: 768px) {
+
+    .heritage-image {
+        height: 210px;
+        margin-bottom: 18px;
+    }
+
+}
