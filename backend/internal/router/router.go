@@ -41,6 +41,7 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 		api.GET("/categories", categorycontroller.GetCategories)
 		api.GET("/lgas", lgacontroller.GetLGAs)
 		api.GET("/happenings", happeningController.GetAll)
+		api.POST("/happenings", happeningController.Create)
 	}
 
 	return router

@@ -75,3 +75,34 @@ func (r *HappeningRepository) GetAll() ([]model.Happening, error) {
 
 	return happenings, nil
 }
+func (r *HappeningRepository) Create(h *model.Happening) error {
+	query := `
+		INSERT INTO happenings (
+			title,
+			description,
+			image_url,
+			location,
+			event_date,
+			category,
+			published
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING id, created_at, updated_at
+	`
+
+	return r.DB.QueryRow(
+		context.Background(),
+		query,
+		h.Title,
+		h.Description,
+		h.ImageURL,
+		h.Location,
+		h.EventDate,
+		h.Category,
+		h.Published,
+	).Scan(
+		&h.ID,
+		&h.CreatedAt,
+		&h.UpdatedAt,
+	)
+}
