@@ -19,7 +19,8 @@ type Business struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
 
-	Verified bool `json:"verified"`
+	Verified bool   `json:"verified"`
+	Status   string `json:"status" db:"status"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

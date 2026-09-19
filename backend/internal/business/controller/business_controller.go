@@ -145,3 +145,96 @@ func (bc *BusinessController) CreateBusiness(c *gin.Context) {
 		"data":    createdBusiness,
 	})
 }
+
+// GetPendingBusinesses returns all businesses waiting for admin approval.
+func (bc *BusinessController) GetPendingBusinesses(c *gin.Context) {
+	businesses, err := bc.Repository.GetBusinessesByStatus(
+		c.Request.Context(),
+		"pending",
+	)
+
+	if err != nil {
+		c.Error(err)
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch pending businesses",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"count":   len(businesses),
+		"data":    businesses,
+	})
+}
+
+// ApproveBusiness approves a pending business.
+func (bc *BusinessController) ApproveBusiness(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid business ID",
+		})
+		return
+	}
+
+	business, err := bc.Repository.UpdateBusinessStatus(
+		c.Request.Context(),
+		uint(id),
+		"approved",
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to approve business",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Business approved successfully",
+		"data":    business,
+	})
+}
+
+// RejectBusiness rejects a business submission.
+func (bc *BusinessController) RejectBusiness(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid business ID",
+		})
+		return
+	}
+
+	business, err := bc.Repository.UpdateBusinessStatus(
+		c.Request.Context(),
+		uint(id),
+		"rejected",
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to reject business",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Business rejected successfully",
+		"data":    business,
+	})
+}

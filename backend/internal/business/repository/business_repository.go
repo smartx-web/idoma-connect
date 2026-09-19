@@ -20,6 +20,8 @@ func NewBusinessRepository(db *pgxpool.Pool) *BusinessRepository {
 	}
 }
 
+// GetBusinesses returns only approved businesses.
+// This is used by the public directory.
 func (r *BusinessRepository) GetBusinesses(
 	ctx context.Context,
 	lga string,
@@ -42,47 +44,39 @@ func (r *BusinessRepository) GetBusinesses(
 			latitude,
 			longitude,
 			verified,
+			status,
 			created_at,
 			updated_at
 		FROM businesses
-		WHERE 1=1
+		WHERE status = 'approved'
 	`
 
 	args := []interface{}{}
-	argNumber := 1
+	argPosition := 1
 
-	if strings.TrimSpace(lga) != "" {
-		query += fmt.Sprintf(
-			" AND LOWER(lga) = LOWER($%d)",
-			argNumber,
-		)
-
+	if lga != "" {
+		query += fmt.Sprintf(" AND lga = $%d", argPosition)
 		args = append(args, lga)
-		argNumber++
+		argPosition++
 	}
 
-	if strings.TrimSpace(category) != "" {
-		query += fmt.Sprintf(
-			" AND LOWER(category) = LOWER($%d)",
-			argNumber,
-		)
-
+	if category != "" {
+		query += fmt.Sprintf(" AND category = $%d", argPosition)
 		args = append(args, category)
-		argNumber++
+		argPosition++
 	}
 
-	if strings.TrimSpace(search) != "" {
+	if search != "" {
 		query += fmt.Sprintf(
-			" AND (LOWER(name) LIKE LOWER($%d) OR LOWER(description) LIKE LOWER($%d))",
-			argNumber,
-			argNumber,
+			" AND (name ILIKE $%d OR description ILIKE $%d)",
+			argPosition,
+			argPosition,
 		)
-
 		args = append(args, "%"+search+"%")
-		argNumber++
+		argPosition++
 	}
 
-	query += " ORDER BY id ASC"
+	query += " ORDER BY created_at DESC"
 
 	rows, err := r.DB.Query(ctx, query, args...)
 	if err != nil {
@@ -90,7 +84,7 @@ func (r *BusinessRepository) GetBusinesses(
 	}
 	defer rows.Close()
 
-	var businesses []model.Business
+	businesses := make([]model.Business, 0)
 
 	for rows.Next() {
 		var business model.Business
@@ -109,6 +103,7 @@ func (r *BusinessRepository) GetBusinesses(
 			&business.Latitude,
 			&business.Longitude,
 			&business.Verified,
+			&business.Status,
 			&business.CreatedAt,
 			&business.UpdatedAt,
 		)
@@ -124,13 +119,10 @@ func (r *BusinessRepository) GetBusinesses(
 		return nil, err
 	}
 
-	if businesses == nil {
-		businesses = []model.Business{}
-	}
-
 	return businesses, nil
 }
 
+// GetBusinessByID returns a single business by ID.
 func (r *BusinessRepository) GetBusinessByID(
 	ctx context.Context,
 	id uint,
@@ -151,15 +143,21 @@ func (r *BusinessRepository) GetBusinessByID(
 			latitude,
 			longitude,
 			verified,
+			status,
 			created_at,
 			updated_at
 		FROM businesses
 		WHERE id = $1
+  AND status = 'approved'
 	`
 
 	var business model.Business
 
-	err := r.DB.QueryRow(ctx, query, id).Scan(
+	err := r.DB.QueryRow(
+		ctx,
+		query,
+		id,
+	).Scan(
 		&business.ID,
 		&business.Name,
 		&business.Description,
@@ -173,6 +171,7 @@ func (r *BusinessRepository) GetBusinessByID(
 		&business.Latitude,
 		&business.Longitude,
 		&business.Verified,
+		&business.Status,
 		&business.CreatedAt,
 		&business.UpdatedAt,
 	)
@@ -184,6 +183,8 @@ func (r *BusinessRepository) GetBusinessByID(
 	return &business, nil
 }
 
+// CreateBusiness creates a new business as pending.
+// New submissions must be reviewed by an admin.
 func (r *BusinessRepository) CreateBusiness(
 	ctx context.Context,
 	business model.Business,
@@ -202,11 +203,23 @@ func (r *BusinessRepository) CreateBusiness(
 			video_url,
 			latitude,
 			longitude,
-			verified
+			verified,
+			status
 		)
 		VALUES (
-			$1, $2, $3, $4, $5, $6,
-			$7, $8, $9, $10, $11, $12
+			$1,
+			$2,
+			$3,
+			$4,
+			$5,
+			$6,
+			$7,
+			$8,
+			$9,
+			$10,
+			$11,
+			FALSE,
+			'pending'
 		)
 		RETURNING
 			id,
@@ -222,6 +235,7 @@ func (r *BusinessRepository) CreateBusiness(
 			latitude,
 			longitude,
 			verified,
+			status,
 			created_at,
 			updated_at
 	`
@@ -242,7 +256,6 @@ func (r *BusinessRepository) CreateBusiness(
 		business.VideoURL,
 		business.Latitude,
 		business.Longitude,
-		business.Verified,
 	).Scan(
 		&created.ID,
 		&created.Name,
@@ -257,6 +270,7 @@ func (r *BusinessRepository) CreateBusiness(
 		&created.Latitude,
 		&created.Longitude,
 		&created.Verified,
+		&created.Status,
 		&created.CreatedAt,
 		&created.UpdatedAt,
 	)
@@ -267,3 +281,150 @@ func (r *BusinessRepository) CreateBusiness(
 
 	return &created, nil
 }
+
+// GetBusinessesByStatus returns businesses with a specific status.
+// This is mainly used by the admin area.
+func (r *BusinessRepository) GetBusinessesByStatus(
+	ctx context.Context,
+	status string,
+) ([]model.Business, error) {
+
+	query := `
+		SELECT
+			id,
+			name,
+			description,
+			category,
+			lga,
+			address,
+			phone,
+			whatsapp,
+			COALESCE(image_url, ''),
+			COALESCE(video_url, ''),
+			latitude,
+			longitude,
+			verified,
+			status,
+			created_at,
+			updated_at
+		FROM businesses
+		WHERE status = $1
+		ORDER BY created_at DESC
+	`
+
+	rows, err := r.DB.Query(ctx, query, status)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	businesses := make([]model.Business, 0)
+
+	for rows.Next() {
+		var business model.Business
+
+		err := rows.Scan(
+			&business.ID,
+			&business.Name,
+			&business.Description,
+			&business.Category,
+			&business.LGA,
+			&business.Address,
+			&business.Phone,
+			&business.WhatsApp,
+			&business.ImageURL,
+			&business.VideoURL,
+			&business.Latitude,
+			&business.Longitude,
+			&business.Verified,
+			&business.Status,
+			&business.CreatedAt,
+			&business.UpdatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		businesses = append(businesses, business)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return businesses, nil
+}
+
+// UpdateBusinessStatus changes a business status.
+// Approved businesses are automatically marked as verified.
+func (r *BusinessRepository) UpdateBusinessStatus(
+	ctx context.Context,
+	id uint,
+	status string,
+) (*model.Business, error) {
+
+	verified := status == "approved"
+
+	query := `
+		UPDATE businesses
+		SET
+			status = $1,
+			verified = $2,
+			updated_at = NOW()
+		WHERE id = $3
+		RETURNING
+			id,
+			name,
+			description,
+			category,
+			lga,
+			address,
+			phone,
+			whatsapp,
+			COALESCE(image_url, ''),
+			COALESCE(video_url, ''),
+			latitude,
+			longitude,
+			verified,
+			status,
+			created_at,
+			updated_at
+	`
+
+	var business model.Business
+
+	err := r.DB.QueryRow(
+		ctx,
+		query,
+		status,
+		verified,
+		id,
+	).Scan(
+		&business.ID,
+		&business.Name,
+		&business.Description,
+		&business.Category,
+		&business.LGA,
+		&business.Address,
+		&business.Phone,
+		&business.WhatsApp,
+		&business.ImageURL,
+		&business.VideoURL,
+		&business.Latitude,
+		&business.Longitude,
+		&business.Verified,
+		&business.Status,
+		&business.CreatedAt,
+		&business.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &business, nil
+}
+
+// Keep strings imported for future repository search helpers.
+var _ = strings.TrimSpace
