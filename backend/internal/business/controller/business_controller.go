@@ -238,3 +238,47 @@ func (bc *BusinessController) RejectBusiness(c *gin.Context) {
 		"data":    business,
 	})
 }
+
+// GetApprovedBusinesses returns all approved businesses.
+func (bc *BusinessController) GetApprovedBusinesses(c *gin.Context) {
+	businesses, err := bc.Repository.GetBusinessesByStatus(
+		c.Request.Context(),
+		"approved",
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch approved businesses",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"count":   len(businesses),
+		"data":    businesses,
+	})
+}
+
+// GetRejectedBusinesses returns all rejected businesses.
+func (bc *BusinessController) GetRejectedBusinesses(c *gin.Context) {
+	businesses, err := bc.Repository.GetBusinessesByStatus(
+		c.Request.Context(),
+		"rejected",
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Failed to fetch rejected businesses",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"count":   len(businesses),
+		"data":    businesses,
+	})
+}

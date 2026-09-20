@@ -11,6 +11,8 @@ import (
 	happeningcontroller "github.com/smartx-web/idoma-connect/backend/internal/happening/controller"
 	happeningrepository "github.com/smartx-web/idoma-connect/backend/internal/happening/repository"
 	lgacontroller "github.com/smartx-web/idoma-connect/backend/internal/lga/controller"
+	premiumcontroller "github.com/smartx-web/idoma-connect/backend/internal/premium/controller"
+	premiumrepository "github.com/smartx-web/idoma-connect/backend/internal/premium/repository"
 )
 
 func SetupRouter(db *pgxpool.Pool) *gin.Engine {
@@ -30,6 +32,10 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 	happeningRepo := happeningrepository.NewHappeningRepository(db)
 	happeningController := happeningcontroller.NewHappeningController(happeningRepo)
 
+	// Premium listing dependencies
+	premiumRepo := premiumrepository.NewPremiumRepository(db)
+	premiumController := premiumcontroller.NewPremiumController(premiumRepo)
+
 	api := router.Group("/api/v1")
 	{
 		// Health
@@ -41,6 +47,8 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 		api.POST("/businesses", businessController.CreateBusiness)
 
 		// Admin business approval routes
+		api.GET("/admin/businesses/approved", businessController.GetApprovedBusinesses)
+		api.GET("/admin/businesses/rejected", businessController.GetRejectedBusinesses)
 		api.GET("/admin/businesses/pending", businessController.GetPendingBusinesses)
 		api.PUT("/admin/businesses/:id/approve", businessController.ApproveBusiness)
 		api.PUT("/admin/businesses/:id/reject", businessController.RejectBusiness)
@@ -54,6 +62,13 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 		// Happenings
 		api.GET("/happenings", happeningController.GetAll)
 		api.POST("/happenings", happeningController.Create)
+
+		// Premium listings
+		api.GET("/premium", premiumController.GetActive)
+
+		api.GET("/admin/premium", premiumController.GetAll)
+		api.POST("/admin/premium", premiumController.Create)
+		api.PUT("/admin/premium/:id/status", premiumController.UpdateStatus)
 	}
 
 	return router

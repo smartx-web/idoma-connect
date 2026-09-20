@@ -250,3 +250,20 @@ h1{
     }
 
 }
+/* =========================================
+   PREMIUM FEATURED BADGE
+========================================= */
+
+.premium-badge {
+    display: inline-block;
+    background: #d71920;
+    color: #ffffff;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(215, 25, 32, 0.25);
+}

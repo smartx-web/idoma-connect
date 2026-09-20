@@ -10,13 +10,20 @@
         content="width=device-width, initial-scale=1.0"
     >
 
+    <meta
+        name="description"
+        content="View business details, location, contact information and services on IDOMA CONNECT."
+    >
+
     <title>Business Details | IDOMA CONNECT</title>
+
 
     <!-- Business page styles -->
     <link
         rel="stylesheet"
         href="css/business.css"
     >
+
 
     <!-- Leaflet map styles -->
     <link
@@ -30,6 +37,10 @@
 <body>
 
 
+<!-- =========================================
+     HEADER
+========================================= -->
+
 <header class="header">
 
     <a
@@ -38,6 +49,7 @@
     >
         IDOMA CONNECT
     </a>
+
 
     <a
         href="businesses.html"
@@ -49,17 +61,55 @@
 </header>
 
 
+
+<!-- =========================================
+     MAIN CONTENT
+========================================= -->
+
 <section class="container">
 
 
-    <!-- Loading message -->
+    <!-- Loading -->
 
-    <div id="loading">
+    <div
+        id="loading"
+        class="loading"
+    >
         Loading business...
     </div>
 
 
-    <!-- Business Details -->
+
+    <!-- Error -->
+
+    <div
+        id="error"
+        class="error-box"
+        style="display:none;"
+    >
+
+        <h2>
+            Business Not Found
+        </h2>
+
+        <p>
+            We couldn't find this business.
+        </p>
+
+        <a
+            href="businesses.html"
+            class="back-btn"
+        >
+            Browse Businesses
+        </a>
+
+    </div>
+
+
+
+    <!-- =====================================
+         BUSINESS DETAILS
+    ====================================== -->
 
     <div
         id="business"
@@ -68,17 +118,40 @@
     >
 
 
-        <!-- Business Image -->
+        <!-- =================================
+             BUSINESS IMAGE
+        ================================== -->
 
-        <img
-            id="businessImage"
-            class="hero-image"
-            src=""
-            alt="Business Image"
-        >
+        <div class="image-wrapper">
 
+            <img
+                id="businessImage"
+                class="hero-image"
+                src=""
+                alt="Business Image"
+            >
+
+        </div>
+
+
+
+        <!-- =================================
+             BUSINESS INFORMATION
+        ================================== -->
 
         <div class="info">
+
+
+            <!-- Premium Badge -->
+
+            <span
+                id="premiumBadge"
+                class="premium-badge"
+                style="display:none;"
+            >
+                PREMIUM FEATURED
+            </span>
+
 
 
             <!-- Category -->
@@ -89,17 +162,20 @@
             ></span>
 
 
+
             <!-- Business Name -->
 
             <h1 id="name"></h1>
 
 
-            <!-- Verification Status -->
+
+            <!-- Verification -->
 
             <p
                 id="verified"
                 class="verified"
             ></p>
+
 
 
             <!-- Description -->
@@ -110,32 +186,43 @@
             ></p>
 
 
-            <!-- Business Information -->
+
+            <!-- =================================
+                 BUSINESS INFORMATION
+            ================================== -->
 
             <div class="details">
 
 
                 <div class="detail-row">
 
-                    <strong>📍 Address</strong>
+                    <strong>
+                        📍 Address
+                    </strong>
 
                     <span id="address"></span>
 
                 </div>
 
 
+
                 <div class="detail-row">
 
-                    <strong>🏛 LGA</strong>
+                    <strong>
+                        🏛 LGA
+                    </strong>
 
                     <span id="lga"></span>
 
                 </div>
 
 
+
                 <div class="detail-row">
 
-                    <strong>📞 Phone</strong>
+                    <strong>
+                        📞 Phone
+                    </strong>
 
                     <span id="phone"></span>
 
@@ -145,7 +232,10 @@
             </div>
 
 
-            <!-- Location -->
+
+            <!-- =================================
+                 LOCATION
+            ================================== -->
 
             <div class="location-section">
 
@@ -160,12 +250,8 @@
                 </p>
 
 
-                <!-- Interactive Map -->
-
                 <div id="map"></div>
 
-
-                <!-- External Map -->
 
                 <a
                     id="mapBtn"
@@ -180,7 +266,10 @@
             </div>
 
 
-            <!-- Contact Actions -->
+
+            <!-- =================================
+                 CONTACT ACTIONS
+            ================================== -->
 
             <div class="actions">
 
@@ -189,7 +278,7 @@
                     id="callBtn"
                     class="call-btn"
                 >
-                    Call Business
+                    📞 Call Business
                 </a>
 
 
@@ -199,7 +288,7 @@
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    WhatsApp
+                    💬 WhatsApp
                 </a>
 
 
@@ -208,19 +297,40 @@
 
         </div>
 
+
     </div>
+
 
 </section>
 
 
-<!-- Leaflet JavaScript -->
+
+<!-- =========================================
+     FOOTER
+========================================= -->
+
+<footer class="business-footer">
+
+    <p>
+        IDOMA CONNECT — The Digital Gateway to Idoma Land.
+    </p>
+
+</footer>
+
+
+
+<!-- =========================================
+     LEAFLET JAVASCRIPT
+========================================= -->
 
 <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-</script>
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+></script>
 
 
-<!-- Our Business JavaScript -->
+<!-- =========================================
+     BUSINESS JAVASCRIPT
+========================================= -->
 
 <script src="js/business.js"></script>
 

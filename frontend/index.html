@@ -17,7 +17,11 @@
     rel="stylesheet"
     href="css/style.css"
 >
-<link rel="stylesheet" href="css/home-spotlight.css">
+
+<link
+    rel="stylesheet"
+    href="css/home-spotlight.css"
+>
 
 </head>
 
@@ -66,9 +70,11 @@
 
 </header>
 
+
 <!-- ================= HOMEPAGE SPOTLIGHT ================= -->
 
 <section class="hero spotlight">
+
 
 <!-- ================= WELCOME ================= -->
 
@@ -114,8 +120,7 @@
 </div>
 
 
-
-<!-- ================= NEWS ================= -->
+<!-- ================= HAPPENINGS ================= -->
 
 <div class="spotlight-slide">
 
@@ -125,10 +130,13 @@
             HAPPENING IN IDOMA LAND
         </p>
 
-        <div class="spotlight-card">
+        <div
+            class="spotlight-card"
+            id="happeningsSpotlight"
+        >
 
             <h2>
-                Stay Connected With Idoma
+                Loading latest happenings...
             </h2>
 
             <p>
@@ -137,11 +145,47 @@
                 Idoma Land.
             </p>
 
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= PREMIUM FEATURED ================= -->
+
+<div class="spotlight-slide">
+
+    <div class="spotlight-content">
+
+        <p class="spotlight-label">
+            PREMIUM FEATURED
+        </p>
+
+        <div
+            class="spotlight-card"
+            id="featuredBusiness"
+        >
+
+            <span class="premium-badge">
+                PREMIUM
+            </span>
+
+            <h2>
+                Loading premium listing...
+            </h2>
+
+            <p>
+                Discover businesses promoted on
+                IDOMA-CONNECT.
+            </p>
+
             <a
-                href="heritage.html"
+                href="businesses.html"
                 class="spotlight-button"
+                id="featuredBusinessLink"
             >
-                Explore Idoma Stories →
+                Explore Businesses →
             </a>
 
         </div>
@@ -150,37 +194,6 @@
 
 </div>
 
-
-
-<!-- ================= FEATURED BUSINESS ================= -->
-
-<div class="spotlight-slide">
-
-    <div class="spotlight-content">
-
-        <p class="spotlight-label">
-            FEATURED BUSINESS
-        </p>
-
-        <div
-            class="spotlight-card"
-            id="featuredBusiness"
-        >
-
-            <h2>
-                Loading featured business...
-            </h2>
-
-            <p>
-                Discover businesses and services
-                across Idoma Land.
-            </p>
-
-        </div>
-
-    </div>
-
-</div>
 
 <!-- ================= HERITAGE ================= -->
 
@@ -219,7 +232,6 @@
 </div>
 
 
-
 <!-- ================= SLIDER DOTS ================= -->
 
 <div class="spotlight-dots">
@@ -231,12 +243,12 @@
 
     <button
         class="spotlight-dot"
-        aria-label="News"
+        aria-label="Happenings in Idoma Land"
     ></button>
 
     <button
         class="spotlight-dot"
-        aria-label="Advertisement"
+        aria-label="Premium Featured"
     ></button>
 
     <button
@@ -245,9 +257,11 @@
     ></button>
 
 </div>
-```
 
 </section>
+
+
+<!-- ================= HOME SEARCH ================= -->
 
 <script>
 
@@ -275,6 +289,7 @@ function searchFromHome() {
 }
 
 </script>
+
 
 <!-- ================= EXPLORE ================= -->
 
@@ -326,7 +341,6 @@ function searchFromHome() {
     </div>
 
 
-
     <!-- ================= HERITAGE ================= -->
 
     <div
@@ -352,7 +366,6 @@ function searchFromHome() {
         </span>
 
     </div>
-
 
 
     <!-- ================= ASK AN ELDER ================= -->
@@ -382,7 +395,6 @@ function searchFromHome() {
     </div>
 
 
-
     <!-- ================= IDOMA SOUNDS ================= -->
 
     <div
@@ -408,7 +420,6 @@ function searchFromHome() {
         </span>
 
     </div>
-
 
 
     <!-- ================= HALL OF FAME ================= -->
@@ -443,6 +454,7 @@ function searchFromHome() {
 
 </section>
 
+
 <!-- ================= HERITAGE ================= -->
 
 <section
@@ -462,7 +474,7 @@ function searchFromHome() {
     </h2>
 
     <p>
-        IDOMA-CONNECT is more than a digital directory. It is a
+        IDOMA-CONNECT is more than a directory. It is a
         growing home for the history, culture, traditions, food,
         festivals, places and stories that define Idoma Land.
     </p>
@@ -476,6 +488,7 @@ function searchFromHome() {
 </div>
 
 </section>
+
 
 <!-- ================= ABOUT ================= -->
 
@@ -504,6 +517,7 @@ function searchFromHome() {
 
 </section>
 
+
 <!-- ================= FOOTER ================= -->
 
 <footer>
@@ -521,6 +535,10 @@ function searchFromHome() {
 </p>
 
 </footer>
+
+
+<!-- ================= HOMEPAGE JAVASCRIPT ================= -->
+
 <script src="js/home.js"></script>
 
 </body>
