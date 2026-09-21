@@ -5,6 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	authcontroller "github.com/smartx-web/idoma-connect/backend/internal/auth/controller"
+	authmiddleware "github.com/smartx-web/idoma-connect/backend/internal/auth/middleware"
 	businesscontroller "github.com/smartx-web/idoma-connect/backend/internal/business/controller"
 	businessrepository "github.com/smartx-web/idoma-connect/backend/internal/business/repository"
 	categorycontroller "github.com/smartx-web/idoma-connect/backend/internal/category/controller"
@@ -19,9 +21,22 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:5500"},
-		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders: []string{"Origin", "Content-Type", "Accept"},
+		AllowOrigins: []string{
+			"http://localhost:5500",
+		},
+		AllowMethods: []string{
+			"GET",
+			"POST",
+			"PUT",
+			"DELETE",
+			"OPTIONS",
+		},
+		AllowHeaders: []string{
+			"Origin",
+			"Content-Type",
+			"Accept",
+			"Authorization",
+		},
 	}))
 
 	// Business dependencies
@@ -36,22 +51,25 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 	premiumRepo := premiumrepository.NewPremiumRepository(db)
 	premiumController := premiumcontroller.NewPremiumController(premiumRepo)
 
+	// Authentication
+	authController := authcontroller.NewAuthController()
+
 	api := router.Group("/api/v1")
 	{
+		// =========================================================
+		// PUBLIC ROUTES
+		// =========================================================
+
 		// Health
 		api.GET("/health", HealthCheck)
+
+		// Authentication
+		api.POST("/auth/login", authController.Login)
 
 		// Public business routes
 		api.GET("/businesses", businessController.GetBusinesses)
 		api.GET("/businesses/:id", businessController.GetBusinessByID)
 		api.POST("/businesses", businessController.CreateBusiness)
-
-		// Admin business approval routes
-		api.GET("/admin/businesses/approved", businessController.GetApprovedBusinesses)
-		api.GET("/admin/businesses/rejected", businessController.GetRejectedBusinesses)
-		api.GET("/admin/businesses/pending", businessController.GetPendingBusinesses)
-		api.PUT("/admin/businesses/:id/approve", businessController.ApproveBusiness)
-		api.PUT("/admin/businesses/:id/reject", businessController.RejectBusiness)
 
 		// Categories
 		api.GET("/categories", categorycontroller.GetCategories)
@@ -59,16 +77,67 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 		// LGAs
 		api.GET("/lgas", lgacontroller.GetLGAs)
 
-		// Happenings
+		// Public happenings
 		api.GET("/happenings", happeningController.GetAll)
-		api.POST("/happenings", happeningController.Create)
 
-		// Premium listings
+		// Public premium listings
 		api.GET("/premium", premiumController.GetActive)
 
-		api.GET("/admin/premium", premiumController.GetAll)
-		api.POST("/admin/premium", premiumController.Create)
-		api.PUT("/admin/premium/:id/status", premiumController.UpdateStatus)
+		// =========================================================
+		// PROTECTED ADMIN ROUTES
+		// =========================================================
+
+		admin := api.Group("/admin")
+		admin.Use(authmiddleware.RequireAdmin())
+		{
+			// Business approval
+			admin.GET(
+				"/businesses/approved",
+				businessController.GetApprovedBusinesses,
+			)
+
+			admin.GET(
+				"/businesses/rejected",
+				businessController.GetRejectedBusinesses,
+			)
+
+			admin.GET(
+				"/businesses/pending",
+				businessController.GetPendingBusinesses,
+			)
+
+			admin.PUT(
+				"/businesses/:id/approve",
+				businessController.ApproveBusiness,
+			)
+
+			admin.PUT(
+				"/businesses/:id/reject",
+				businessController.RejectBusiness,
+			)
+
+			// Happenings
+			admin.POST(
+				"/happenings",
+				happeningController.Create,
+			)
+
+			// Premium listings
+			admin.GET(
+				"/premium",
+				premiumController.GetAll,
+			)
+
+			admin.POST(
+				"/premium",
+				premiumController.Create,
+			)
+
+			admin.PUT(
+				"/premium/:id/status",
+				premiumController.UpdateStatus,
+			)
+		}
 	}
 
 	return router

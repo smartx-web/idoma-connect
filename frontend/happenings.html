@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Happenings | IDOMA-CONNECT</title>
+
+<link
+    rel="stylesheet"
+    href="css/style.css"
+>
+
+<style>
+
+/* ==========================================
+   PAGE
+   ========================================== */
+
+body {
+    margin: 0;
+    background: #f5f5f5;
+    color: #222;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* ==========================================
+   HERO
+   ========================================== */
+
+.happenings-hero {
+    background:
+        linear-gradient(
+            rgba(0, 0, 0, 0.72),
+            rgba(0, 0, 0, 0.72)
+        ),
+        #111;
+
+    color: #fff;
+    padding: 90px 20px;
+    text-align: center;
+}
+
+
+.happenings-hero-content {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+
+.happenings-label {
+    color: #d71920;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+
+.happenings-hero h1 {
+    font-size: 48px;
+    margin: 0 0 18px;
+    line-height: 1.15;
+}
+
+
+.happenings-hero h1 span {
+    color: #d71920;
+}
+
+
+.happenings-hero p {
+    color: #ddd;
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.8;
+    font-size: 17px;
+}
+
+
+/* ==========================================
+   MAIN CONTAINER
+   ========================================== */
+
+.happenings-container {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+
+/* ==========================================
+   SEARCH + FILTERS
+   ========================================== */
+
+.happenings-controls {
+    background: #fff;
+    padding: 25px;
+    border-radius: 16px;
+
+    margin-bottom: 55px;
+
+    box-shadow:
+        0 8px 25px
+        rgba(0, 0, 0, 0.06);
+}
+
+
+.happenings-search {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+
+.happenings-search input {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 15px 18px 15px 48px;
+
+    border: 1px solid #ddd;
+    border-radius: 10px;
+
+    font-size: 15px;
+    outline: none;
+
+    background: #fafafa;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.happenings-search input:focus {
+    border-color: #d71920;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(215, 25, 32, 0.08);
+}
+
+
+.search-icon {
+    position: absolute;
+
+    left: 17px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #777;
+    font-size: 18px;
+
+    pointer-events: none;
+}
+
+
+.category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+
+.category-button {
+    border: 1px solid #ddd;
+
+    background: #fff;
+    color: #444;
+
+    padding: 9px 15px;
+
+    border-radius: 30px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.category-button:hover {
+    border-color: #d71920;
+    color: #d71920;
+}
+
+
+.category-button.active {
+    background: #d71920;
+    border-color: #d71920;
+    color: #fff;
+}
+
+
+.category-button:active {
+    transform: scale(0.97);
+}
+
+
+/* ==========================================
+   RESULTS INFO
+   ========================================== */
+
+.results-info {
+    display: none;
+
+    margin-top: 18px;
+
+    color: #777;
+    font-size: 13px;
+}
+
+
+/* ==========================================
+   SECTION HEADING
+   ========================================== */
+
+.section-heading {
+    margin-bottom: 28px;
+}
+
+
+.section-heading-label {
+    color: #d71920;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+}
+
+
+.section-heading h2 {
+    margin: 0;
+    font-size: 30px;
+}
+
+
+/* ==========================================
+   FEATURED HAPPENING
+   ========================================== */
+
+.featured-happening {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+
+    background: #111;
+    color: #fff;
+
+    border-radius: 18px;
+    overflow: hidden;
+
+    margin-bottom: 65px;
+
+    box-shadow:
+        0 15px 40px
+        rgba(0, 0, 0, 0.12);
+}
+
+
+.featured-image {
+    min-height: 390px;
+    background: #222;
+}
+
+
+.featured-image img {
+    width: 100%;
+    height: 100%;
+    min-height: 390px;
+
+    object-fit: cover;
+    display: block;
+}
+
+
+.featured-content {
+    padding: 48px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+.featured-badge {
+    display: inline-block;
+    width: fit-content;
+
+    background: #d71920;
+    color: #fff;
+
+    padding: 7px 13px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+
+    margin-bottom: 18px;
+}
+
+
+.featured-category {
+    color: #aaa;
+
+    font-size: 13px;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    margin-bottom: 12px;
+}
+
+
+.featured-content h2 {
+    font-size: 34px;
+    line-height: 1.2;
+
+    margin: 0 0 18px;
+}
+
+
+.featured-content p {
+    color: #ccc;
+
+    line-height: 1.8;
+
+    margin-bottom: 22px;
+}
+
+
+.featured-meta {
+    color: #aaa;
+
+    font-size: 14px;
+
+    margin: 5px 0;
+}
+
+
+.featured-button {
+    display: inline-block;
+    width: fit-content;
+
+    margin-top: 20px;
+
+    background: #d71920;
+    color: #fff;
+
+    text-decoration: none;
+
+    padding: 12px 20px;
+
+    border-radius: 7px;
+
+    font-weight: 700;
+
+    transition: 0.2s ease;
+}
+
+
+.featured-button:hover {
+    background: #b8141b;
+    transform: translateY(-2px);
+}
+
+
+/* ==========================================
+   HAPPENINGS GRID
+   ========================================== */
+
+.happenings-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(290px, 1fr)
+        );
+
+    gap: 26px;
+}
+
+
+.happening-card {
+    background: #fff;
+
+    border-radius: 14px;
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 25px
+        rgba(0, 0, 0, 0.07);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+.happening-card:hover {
+    transform: translateY(-5px);
+
+    box-shadow:
+        0 15px 35px
+        rgba(0, 0, 0, 0.11);
+}
+
+
+.happening-card-link {
+    display: block;
+
+    color: inherit;
+    text-decoration: none;
+}
+
+
+.happening-card-image {
+    width: 100%;
+    height: 220px;
+
+    object-fit: cover;
+    display: block;
+}
+
+
+.happening-card-content {
+    padding: 22px;
+}
+
+
+.happening-category {
+    display: inline-block;
+
+    background: #fbe5e6;
+    color: #b8141b;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    margin-bottom: 12px;
+}
+
+
+.happening-card h3 {
+    margin: 0 0 12px;
+
+    font-size: 21px;
+    line-height: 1.35;
+}
+
+
+.happening-card p {
+    color: #555;
+
+    line-height: 1.7;
+
+    margin-bottom: 18px;
+}
+
+
+.happening-meta {
+    color: #666;
+
+    font-size: 13px;
+
+    margin: 7px 0;
+}
+
+
+.read-more {
+    display: inline-block;
+
+    margin-top: 10px;
+
+    color: #d71920;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* ==========================================
+   NO SEARCH RESULTS
+   ========================================== */
+
+.no-results {
+    display: none;
+
+    background: #fff;
+
+    text-align: center;
+
+    padding: 65px 20px;
+
+    border-radius: 14px;
+
+    color: #666;
+
+    margin-top: 20px;
+}
+
+
+.no-results h2 {
+    color: #222;
+
+    margin-bottom: 10px;
+}
+
+
+.no-results p {
+    line-height: 1.7;
+}
+
+
+/* ==========================================
+   LOADING
+   ========================================== */
+
+.loading-state {
+    text-align: center;
+
+    padding: 70px 20px;
+
+    color: #666;
+}
+
+
+.loading-spinner {
+    width: 38px;
+    height: 38px;
+
+    border: 4px solid #ddd;
+
+    border-top-color: #d71920;
+
+    border-radius: 50%;
+
+    margin: 0 auto 15px;
+
+    animation:
+        happeningsSpin 0.8s linear infinite;
+}
+
+
+@keyframes happeningsSpin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* ==========================================
+   EMPTY / ERROR
+   ========================================== */
+
+.empty-state {
+    background: #fff;
+
+    text-align: center;
+
+    padding: 70px 20px;
+
+    border-radius: 14px;
+}
+
+
+.empty-state h2 {
+    margin-bottom: 10px;
+}
+
+
+.empty-state p {
+    color: #666;
+
+    line-height: 1.7;
+}
+
+
+.error-state {
+    background: #fff;
+
+    text-align: center;
+
+    padding: 70px 20px;
+
+    border-radius: 14px;
+
+    color: #666;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 800px) {
+
+    .happenings-hero {
+        padding: 65px 20px;
+    }
+
+
+    .happenings-hero h1 {
+        font-size: 36px;
+    }
+
+
+    .featured-happening {
+        grid-template-columns: 1fr;
+    }
+
+
+    .featured-image,
+    .featured-image img {
+        min-height: 260px;
+        height: 260px;
+    }
+
+
+    .featured-content {
+        padding: 30px 25px;
+    }
+
+
+    .featured-content h2 {
+        font-size: 28px;
+    }
+
+
+    .happenings-controls {
+        padding: 20px;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .happenings-container {
+        margin: 40px auto;
+    }
+
+
+    .happenings-hero h1 {
+        font-size: 31px;
+    }
+
+
+    .happenings-hero p {
+        font-size: 15px;
+    }
+
+
+    .section-heading h2 {
+        font-size: 25px;
+    }
+
+
+    .featured-content {
+        padding: 25px 20px;
+    }
+
+
+    .featured-content h2 {
+        font-size: 25px;
+    }
+
+
+    .category-filters {
+        gap: 7px;
+    }
+
+
+    .category-button {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     NAVIGATION
+     ========================================== -->
+
+<header class="navbar">
+
+    <div class="logo">
+
+        <h2>
+            IDOMA<span>-CONNECT</span>
+        </h2>
+
+        <small>
+            The Digital Gateway to Idoma Land
+        </small>
+
+    </div>
+
+
+    <nav>
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a href="businesses.html">
+            Businesses
+        </a>
+
+        <a href="hall-of-fame.html">
+            Hall of Fame
+        </a>
+
+        <a href="heritage.html">
+            Heritage
+        </a>
+
+        <a href="happenings.html">
+            Happenings
+        </a>
+
+    </nav>
+
+</header>
+
+
+<!-- ==========================================
+     HERO
+     ========================================== -->
+
+<section class="happenings-hero">
+
+    <div class="happenings-hero-content">
+
+        <p class="happenings-label">
+            HAPPENING IN IDOMA LAND
+        </p>
+
+        <h1>
+            Stories.
+            <span>Events.</span>
+            Community.
+        </h1>
+
+        <p>
+            Discover events, cultural festivals, achievements,
+            announcements and stories shaping Idoma Land.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ==========================================
+     MAIN
+     ========================================== -->
+
+<main class="happenings-container">
+
+
+    <!-- ======================================
+         SEARCH + FILTERS
+         ====================================== -->
+
+    <section class="happenings-controls">
+
+        <div class="happenings-search">
+
+            <span class="search-icon">
+                🔎
+            </span>
+
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="Search happenings, events, places..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div
+            id="categoryFilters"
+            class="category-filters"
+        ></div>
+
+
+        <div
+            id="resultsInfo"
+            class="results-info"
+        ></div>
+
+    </section>
+
+
+    <!-- ======================================
+         FEATURED
+         ====================================== -->
+
+    <section
+        id="featuredSection"
+        style="display:none;"
+    >
+
+        <div class="section-heading">
+
+            <p class="section-heading-label">
+                FEATURED
+            </p>
+
+            <h2>
+                What's happening now
+            </h2>
+
+        </div>
+
+
+        <div
+            id="featuredHappening"
+            class="featured-happening"
+        ></div>
+
+    </section>
+
+
+    <!-- ======================================
+         LATEST
+         ====================================== -->
+
+    <section>
+
+        <div class="section-heading">
+
+            <p class="section-heading-label">
+                LATEST HAPPENINGS
+            </p>
+
+            <h2 id="latestHeading">
+                Events & Community Updates
+            </h2>
+
+        </div>
+
+
+        <div
+            id="loading"
+            class="loading-state"
+        >
+
+            <div class="loading-spinner"></div>
+
+            <p>
+                Loading happenings...
+            </p>
+
+        </div>
+
+
+        <div
+            id="happeningsGrid"
+            class="happenings-grid"
+            style="display:none;"
+        ></div>
+
+
+        <div
+            id="noResults"
+            class="no-results"
+        >
+
+            <h2>
+                No matching happenings
+            </h2>
+
+            <p>
+                Try a different search term or category.
+            </p>
+
+        </div>
+
+
+        <div
+            id="emptyState"
+            class="empty-state"
+            style="display:none;"
+        >
+
+            <h2>
+                No published happenings yet
+            </h2>
+
+            <p>
+                Check back later for community updates
+                across Idoma Land.
+            </p>
+
+        </div>
+
+
+        <div
+            id="errorState"
+            class="error-state"
+            style="display:none;"
+        >
+
+            <h2>
+                Unable to load happenings
+            </h2>
+
+            <p>
+                Please refresh the page and try again.
+            </p>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<!-- ==========================================
+     FOOTER
+     ========================================== -->
+
+<footer>
+
+    <h2>
+        IDOMA<span>-CONNECT</span>
+    </h2>
+
+    <p>
+        Discover. Connect. Experience Idoma.
+    </p>
+
+    <p class="copyright">
+        © 2026 IDOMA-CONNECT.
+        Built with ❤️ for Idoma Land.
+    </p>
+
+</footer>
+
+
+<script src="js/happenings.js"></script>
+
+</body>
+
+</html>
