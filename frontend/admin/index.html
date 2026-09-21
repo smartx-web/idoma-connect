@@ -171,17 +171,24 @@
 
   <div class="header">
 
-    <div>
-      <h1>Admin Dashboard</h1>
-      <p>Manage businesses, happenings and premium listings.</p>
-    </div>
+  <div>
+    <h1>Admin Dashboard</h1>
+    <p>Manage businesses, happenings and premium listings.</p>
+  </div>
+
+  <div style="display:flex; gap:10px; align-items:center;">
 
     <a href="../index.html" class="website-btn">
       View Website
     </a>
 
+    <button onclick="logout()" class="logout-btn">
+      Logout
+    </button>
+
   </div>
 
+</div>
 
   <!-- Statistics -->
 
@@ -260,6 +267,11 @@
   </div>
 
 </div>
+<script src="../js/admin-auth.js"></script>
+
+<script>
+requireLogin();
+</script>
 
 <script src="../js/admin-dashboard.js"></script>
 

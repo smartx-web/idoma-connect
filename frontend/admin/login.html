@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login | IDOMA-CONNECT</title>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      background:linear-gradient(135deg,#111,#300);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .login-box{
+      width:100%;
+      max-width:420px;
+      background:#fff;
+      border-radius:18px;
+      padding:40px 32px;
+      box-shadow:0 20px 45px rgba(0,0,0,.25);
+    }
+
+    .logo{
+      text-align:center;
+      margin-bottom:28px;
+    }
+
+    .logo h1{
+      color:#111;
+      font-size:28px;
+    }
+
+    .logo span{color:#d71920}
+
+    .logo p{
+      color:#777;
+      margin-top:6px;
+      font-size:14px;
+    }
+
+    label{
+      display:block;
+      margin:14px 0 6px;
+      font-weight:bold;
+      color:#333;
+    }
+
+    input{
+      width:100%;
+      padding:13px;
+      border:1px solid #ddd;
+      border-radius:8px;
+      font-size:15px;
+    }
+
+    input:focus{
+      outline:none;
+      border-color:#d71920;
+    }
+
+    button{
+      width:100%;
+      margin-top:22px;
+      padding:14px;
+      border:none;
+      border-radius:8px;
+      background:#d71920;
+      color:#fff;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    button:hover{
+      background:#b8141b;
+    }
+
+    .message{
+      margin-top:16px;
+      text-align:center;
+      font-size:14px;
+      min-height:20px;
+    }
+
+    .error{color:#d71920}
+    .success{color:#0a8f38}
+  </style>
+</head>
+<body>
+
+<div class="login-box">
+
+  <div class="logo">
+    <h1>IDOMA<span>-CONNECT</span></h1>
+    <p>Administrator Portal</p>
+  </div>
+
+  <form id="loginForm">
+
+    <label>Username</label>
+    <input id="username" type="text" required />
+
+    <label>Password</label>
+    <input id="password" type="password" required />
+
+    <button id="loginBtn" type="submit">
+      Sign In
+    </button>
+
+  </form>
+
+  <div id="message" class="message"></div>
+
+</div>
+
+<script src="../js/login.js"></script>
+
+</body>
+</html>

@@ -6,15 +6,31 @@ const rejectedCount = document.getElementById("rejectedCount");
 const happeningsCount = document.getElementById("happeningsCount");
 const activityList = document.getElementById("activityList");
 
-async function fetchJSON(url) {
-    const res = await fetch(url);
+function getAdminToken() {
+    return localStorage.getItem("admin_token");
+}
 
-    if (!res.ok) {
-        throw new Error("Request failed");
+async function fetchJSON(url) {
+    const token = localStorage.getItem("admin_token");
+
+    console.log("Using token:", token ? "YES" : "NO");
+
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    console.log(url, response.status);
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
     }
 
-    return res.json();
+    return response.json();
 }
+
 
 async function loadDashboard() {
     try {
@@ -31,34 +47,44 @@ async function loadDashboard() {
             fetchJSON(`${API}/happenings`)
         ]);
 
-        approvedCount.textContent = approved.count || 0;
-        pendingCount.textContent = pending.count || 0;
-        rejectedCount.textContent = rejected.count || 0;
-        happeningsCount.textContent = happenings.data.length || 0;
+        if (!approved || !pending || !rejected || !happenings) {
+            return;
+        }
+
+        approvedCount.textContent = approved.count ?? 0;
+        pendingCount.textContent = pending.count ?? 0;
+        rejectedCount.textContent = rejected.count ?? 0;
+
+        const happeningsData = Array.isArray(happenings.data)
+            ? happenings.data
+            : [];
+
+        happeningsCount.textContent = happeningsData.length;
 
         activityList.innerHTML = `
             <div class="activity-item">
                 <span>Approved businesses</span>
-                <strong>${approved.count}</strong>
+                <strong>${approved.count ?? 0}</strong>
             </div>
 
             <div class="activity-item">
                 <span>Pending submissions</span>
-                <strong>${pending.count}</strong>
+                <strong>${pending.count ?? 0}</strong>
             </div>
 
             <div class="activity-item">
                 <span>Rejected businesses</span>
-                <strong>${rejected.count}</strong>
+                <strong>${rejected.count ?? 0}</strong>
             </div>
 
             <div class="activity-item">
                 <span>Total happenings</span>
-                <strong>${happenings.data.length}</strong>
+                <strong>${happeningsData.length}</strong>
             </div>
         `;
 
-    } catch (err) {
+    } catch (error) {
+        console.error("Dashboard error:", error);
 
         activityList.innerHTML = `
             <div style="color:#b42318">

@@ -1,13 +1,67 @@
 const API_BASE_URL = "http://localhost:8080/api/v1";
 
-const businessesList = document.getElementById("businessesList");
-const pendingCount = document.getElementById("pendingCount");
-const message = document.getElementById("message");
-const refreshButton = document.getElementById("refreshButton");
+// =============================
+// AUTHENTICATION
+// =============================
 
+function getAdminToken() {
+    return localStorage.getItem("admin_token");
+}
 
-// Load pending businesses
+function getAuthHeaders() {
+    const token = getAdminToken();
+
+    if (!token) {
+        window.location.href = "login.html";
+        return null;
+    }
+
+    return {
+        "Authorization": `Bearer ${token}`
+    };
+}
+
+function getJsonAuthHeaders() {
+    const token = getAdminToken();
+
+    if (!token) {
+        window.location.href = "login.html";
+        return null;
+    }
+
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+    };
+}
+
+function handleUnauthorized() {
+    localStorage.removeItem("admin_token");
+    window.location.href = "login.html";
+}
+
+// =============================
+// DOM ELEMENTS
+// =============================
+
+const businessesList =
+    document.getElementById("businessesList");
+
+const pendingCount =
+    document.getElementById("pendingCount");
+
+const message =
+    document.getElementById("message");
+
+const refreshButton =
+    document.getElementById("refreshButton");
+
+// =============================
+// LOAD PENDING BUSINESSES
+// =============================
+
 async function loadPendingBusinesses() {
+
     businessesList.innerHTML = `
         <div class="loading">
             Loading pending businesses...
@@ -17,34 +71,91 @@ async function loadPendingBusinesses() {
     clearMessage();
 
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/admin/businesses/pending`
-        );
 
-        if (!response.ok) {
-            throw new Error("Failed to load pending businesses.");
+        const headers = getAuthHeaders();
+
+        if (!headers) {
+            return;
         }
 
-        const result = await response.json();
+        console.log(
+            "Loading pending businesses with token:",
+            getAdminToken() ? "YES" : "NO"
+        );
 
-        const businesses = result.data || [];
+        const response = await fetch(
+            `${API_BASE_URL}/admin/businesses/pending`,
+            {
+                method: "GET",
+                headers: headers
+            }
+        );
 
-        updatePendingCount(businesses.length);
+        console.log(
+            "Pending businesses status:",
+            response.status
+        );
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+            handleUnauthorized();
+            return;
+        }
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+            console.error(
+                "Pending businesses API error:",
+                errorText
+            );
+
+            throw new Error(
+                "Failed to load pending businesses."
+            );
+        }
+
+        const result =
+            await response.json();
+
+        console.log(
+            "Pending businesses response:",
+            result
+        );
+
+        const businesses =
+            Array.isArray(result.data)
+                ? result.data
+                : [];
+
+        updatePendingCount(
+            businesses.length
+        );
 
         if (businesses.length === 0) {
             showEmptyState();
             return;
         }
 
-        renderBusinesses(businesses);
+        renderBusinesses(
+            businesses
+        );
 
     } catch (error) {
-        console.error("Error loading businesses:", error);
+
+        console.error(
+            "Error loading businesses:",
+            error
+        );
 
         businessesList.innerHTML = `
             <div class="error-message">
                 Unable to load pending businesses.
-                Please make sure the API server is running.
+                Please try refreshing the page.
             </div>
         `;
 
@@ -52,162 +163,234 @@ async function loadPendingBusinesses() {
     }
 }
 
+// =============================
+// UPDATE COUNT
+// =============================
 
-// Update pending count
 function updatePendingCount(count) {
-    pendingCount.textContent = `${count} Pending`;
+
+    pendingCount.textContent =
+        `${count} Pending`;
+
 }
 
+// =============================
+// RENDER BUSINESSES
+// =============================
 
-// Render business cards
-function renderBusinesses(businesses) {
+function renderBusinesses(
+    businesses
+) {
+
     businessesList.innerHTML = "";
 
-    businesses.forEach((business) => {
+    businesses.forEach(
+        (business) => {
 
-        const businessItem = document.createElement("article");
+            const businessItem =
+                document.createElement(
+                    "article"
+                );
 
-        businessItem.className = "business-item";
+            businessItem.className =
+                "business-item";
 
-        const imageHTML = business.image_url
-            ? `
-                <img
-                    src="${escapeHTML(business.image_url)}"
-                    alt="${escapeHTML(business.name)}"
-                    class="business-image"
-                >
-            `
-            : `
-                <div class="business-image-placeholder">
-                    No image available
+            const imageHTML =
+                business.image_url
+                    ? `
+                        <img
+                            src="${escapeHTML(
+                                business.image_url
+                            )}"
+                            alt="${escapeHTML(
+                                business.name
+                            )}"
+                            class="business-image"
+                        >
+                    `
+                    : `
+                        <div class="business-image-placeholder">
+                            No image available
+                        </div>
+                    `;
+
+            businessItem.innerHTML = `
+                <div>
+                    ${imageHTML}
+                </div>
+
+                <div class="business-content">
+
+                    <span class="pending-badge">
+                        PENDING REVIEW
+                    </span>
+
+                    <h3>
+                        ${escapeHTML(
+                            business.name
+                        )}
+                    </h3>
+
+                    <div class="business-meta">
+                        ${escapeHTML(
+                            business.category
+                        )}
+                        ·
+                        ${escapeHTML(
+                            business.lga
+                        )}
+                    </div>
+
+                    <div class="business-description">
+                        ${escapeHTML(
+                            business.description ||
+                            "No description provided."
+                        )}
+                    </div>
+
+                    <div class="business-contact">
+
+                        ${
+                            business.address
+                                ? `
+                                    <div>
+                                        <strong>
+                                            Address:
+                                        </strong>
+                                        ${escapeHTML(
+                                            business.address
+                                        )}
+                                    </div>
+                                `
+                                : ""
+                        }
+
+                        ${
+                            business.phone
+                                ? `
+                                    <div>
+                                        <strong>
+                                            Phone:
+                                        </strong>
+                                        ${escapeHTML(
+                                            business.phone
+                                        )}
+                                    </div>
+                                `
+                                : ""
+                        }
+
+                        ${
+                            business.whatsapp
+                                ? `
+                                    <div>
+                                        <strong>
+                                            WhatsApp:
+                                        </strong>
+                                        ${escapeHTML(
+                                            business.whatsapp
+                                        )}
+                                    </div>
+                                `
+                                : ""
+                        }
+
+                    </div>
+
+                    <div class="business-meta">
+                        Submitted:
+                        ${formatDate(
+                            business.created_at
+                        )}
+                    </div>
+
+                    <div class="business-actions">
+
+                        <button
+                            type="button"
+                            class="action-button approve-button"
+                            data-id="${business.id}"
+                            onclick="approveBusiness(${business.id})"
+                        >
+                            Approve
+                        </button>
+
+                        <button
+                            type="button"
+                            class="action-button reject-button"
+                            data-id="${business.id}"
+                            onclick="rejectBusiness(${business.id})"
+                        >
+                            Reject
+                        </button>
+
+                    </div>
+
                 </div>
             `;
 
-        businessItem.innerHTML = `
-            <div>
-                ${imageHTML}
-            </div>
+            businessesList.appendChild(
+                businessItem
+            );
 
-            <div class="business-content">
-
-                <span class="pending-badge">
-                    PENDING REVIEW
-                </span>
-
-                <h3>
-                    ${escapeHTML(business.name)}
-                </h3>
-
-                <div class="business-meta">
-                    ${escapeHTML(business.category)}
-                    ·
-                    ${escapeHTML(business.lga)}
-                </div>
-
-                <div class="business-description">
-                    ${escapeHTML(
-                        business.description || "No description provided."
-                    )}
-                </div>
-
-                <div class="business-contact">
-
-                    ${
-                        business.address
-                            ? `
-                                <div>
-                                    <strong>Address:</strong>
-                                    ${escapeHTML(business.address)}
-                                </div>
-                            `
-                            : ""
-                    }
-
-                    ${
-                        business.phone
-                            ? `
-                                <div>
-                                    <strong>Phone:</strong>
-                                    ${escapeHTML(business.phone)}
-                                </div>
-                            `
-                            : ""
-                    }
-
-                    ${
-                        business.whatsapp
-                            ? `
-                                <div>
-                                    <strong>WhatsApp:</strong>
-                                    ${escapeHTML(business.whatsapp)}
-                                </div>
-                            `
-                            : ""
-                    }
-
-                </div>
-
-                <div class="business-meta">
-                    Submitted:
-                    ${formatDate(business.created_at)}
-                </div>
-
-                <div class="business-actions">
-
-                    <button
-                        type="button"
-                        class="action-button approve-button"
-                        data-id="${business.id}"
-                        onclick="approveBusiness(${business.id})"
-                    >
-                        Approve
-                    </button>
-
-                    <button
-                        type="button"
-                        class="action-button reject-button"
-                        data-id="${business.id}"
-                        onclick="rejectBusiness(${business.id})"
-                    >
-                        Reject
-                    </button>
-
-                </div>
-
-            </div>
-        `;
-
-        businessesList.appendChild(businessItem);
-    });
+        }
+    );
 }
 
+// =============================
+// APPROVE BUSINESS
+// =============================
 
-// Approve business
 async function approveBusiness(id) {
 
-    const confirmed = confirm(
-        "Are you sure you want to approve this business?"
-    );
+    const confirmed =
+        confirm(
+            "Are you sure you want to approve this business?"
+        );
 
     if (!confirmed) {
         return;
     }
 
-    setButtonsDisabled(id, true);
+    setButtonsDisabled(
+        id,
+        true
+    );
 
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/admin/businesses/${id}/approve`,
-            {
-                method: "PUT"
-            }
-        );
 
-        const result = await response.json();
+        const headers =
+            getJsonAuthHeaders();
+
+        if (!headers) {
+            return;
+        }
+
+        const response =
+            await fetch(
+                `${API_BASE_URL}/admin/businesses/${id}/approve`,
+                {
+                    method: "PUT",
+                    headers: headers
+                }
+            );
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+            handleUnauthorized();
+            return;
+        }
+
+        const result =
+            await response.json();
 
         if (!response.ok) {
+
             throw new Error(
-                result.message || "Failed to approve business."
+                result.message ||
+                "Failed to approve business."
             );
         }
 
@@ -219,44 +402,79 @@ async function approveBusiness(id) {
         await loadPendingBusinesses();
 
     } catch (error) {
-        console.error("Approval error:", error);
+
+        console.error(
+            "Approval error:",
+            error
+        );
 
         showMessage(
-            error.message || "Failed to approve business.",
+            error.message ||
+            "Failed to approve business.",
             "error"
         );
 
-        setButtonsDisabled(id, false);
+        setButtonsDisabled(
+            id,
+            false
+        );
     }
 }
 
+// =============================
+// REJECT BUSINESS
+// =============================
 
-// Reject business
 async function rejectBusiness(id) {
 
-    const confirmed = confirm(
-        "Are you sure you want to reject this business?"
-    );
+    const confirmed =
+        confirm(
+            "Are you sure you want to reject this business?"
+        );
 
     if (!confirmed) {
         return;
     }
 
-    setButtonsDisabled(id, true);
+    setButtonsDisabled(
+        id,
+        true
+    );
 
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/admin/businesses/${id}/reject`,
-            {
-                method: "PUT"
-            }
-        );
 
-        const result = await response.json();
+        const headers =
+            getJsonAuthHeaders();
+
+        if (!headers) {
+            return;
+        }
+
+        const response =
+            await fetch(
+                `${API_BASE_URL}/admin/businesses/${id}/reject`,
+                {
+                    method: "PUT",
+                    headers: headers
+                }
+            );
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+            handleUnauthorized();
+            return;
+        }
+
+        const result =
+            await response.json();
 
         if (!response.ok) {
+
             throw new Error(
-                result.message || "Failed to reject business."
+                result.message ||
+                "Failed to reject business."
             );
         }
 
@@ -268,32 +486,51 @@ async function rejectBusiness(id) {
         await loadPendingBusinesses();
 
     } catch (error) {
-        console.error("Rejection error:", error);
+
+        console.error(
+            "Rejection error:",
+            error
+        );
 
         showMessage(
-            error.message || "Failed to reject business.",
+            error.message ||
+            "Failed to reject business.",
             "error"
         );
 
-        setButtonsDisabled(id, false);
+        setButtonsDisabled(
+            id,
+            false
+        );
     }
 }
 
+// =============================
+// DISABLE BUTTONS
+// =============================
 
-// Disable buttons while action is processing
-function setButtonsDisabled(id, disabled) {
+function setButtonsDisabled(
+    id,
+    disabled
+) {
 
-    const buttons = document.querySelectorAll(
-        `[data-id="${id}"]`
+    const buttons =
+        document.querySelectorAll(
+            `[data-id="${id}"]`
+        );
+
+    buttons.forEach(
+        (button) => {
+            button.disabled =
+                disabled;
+        }
     );
-
-    buttons.forEach((button) => {
-        button.disabled = disabled;
-    });
 }
 
+// =============================
+// EMPTY STATE
+// =============================
 
-// Show empty state
 function showEmptyState() {
 
     businessesList.innerHTML = `
@@ -304,20 +541,27 @@ function showEmptyState() {
             </h3>
 
             <p>
-                There are currently no business submissions waiting for review.
+                There are currently no business
+                submissions waiting for review.
             </p>
 
         </div>
     `;
 }
 
+// =============================
+// SHOW MESSAGE
+// =============================
 
-// Show message
-function showMessage(text, type) {
+function showMessage(
+    text,
+    type
+) {
 
     message.className = "";
 
-    message.textContent = text;
+    message.textContent =
+        text;
 
     message.classList.add(
         type === "success"
@@ -326,8 +570,10 @@ function showMessage(text, type) {
     );
 }
 
+// =============================
+// CLEAR MESSAGE
+// =============================
 
-// Clear message
 function clearMessage() {
 
     message.className = "";
@@ -335,46 +581,79 @@ function clearMessage() {
     message.textContent = "";
 }
 
+// =============================
+// FORMAT DATE
+// =============================
 
-// Format date
-function formatDate(dateString) {
+function formatDate(
+    dateString
+) {
 
     if (!dateString) {
         return "Unknown";
     }
 
-    const date = new Date(dateString);
+    const date =
+        new Date(dateString);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
         return "Unknown";
     }
 
     return date.toLocaleString();
 }
 
+// =============================
+// ESCAPE HTML
+// =============================
 
-// Basic HTML escaping
 function escapeHTML(value) {
 
-    if (value === null || value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
         return "";
     }
 
     return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
+// =============================
+// REFRESH
+// =============================
 
-// Refresh button
 refreshButton.addEventListener(
     "click",
     loadPendingBusinesses
 );
 
+// =============================
+// INITIAL LOAD
+// =============================
 
-// Initial load
 loadPendingBusinesses();

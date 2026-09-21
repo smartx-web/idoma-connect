@@ -390,7 +390,7 @@ MOBILE RESPONSIVENESS
 
 @media (max-width: 900px) {
 
-```
+
 .navbar {
     padding: 18px 5%;
 }
@@ -414,13 +414,13 @@ MOBILE RESPONSIVENESS
 .business-grid {
     grid-template-columns: repeat(2, 1fr);
 }
-```
+
 
 }
 
 @media (max-width: 600px) {
 
-```
+
 .hero {
     min-height: 570px;
 }
@@ -464,6 +464,20 @@ MOBILE RESPONSIVENESS
 .heritage-section {
     padding: 80px 5%;
 }
-```
 
+
+}
+.logout-btn{
+  background:#d71920;
+  color:#fff;
+  border:none;
+  padding:12px 18px;
+  border-radius:8px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.logout-btn:hover{
+  background:#b8141b;
 }
