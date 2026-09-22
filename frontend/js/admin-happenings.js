@@ -1,18 +1,24 @@
 const API_BASE_URL = "http://localhost:8080/api/v1";
 
-const CLOUDINARY_URL =
+const CLOUDINARY_UPLOAD_URL =
     "https://api.cloudinary.com/v1_1/gvmcwi4b/image/upload";
 
-const CLOUDINARY_PRESET =
+const CLOUDINARY_UPLOAD_PRESET =
     "idoma_connect_upload";
 
 
 /* =========================
-   ELEMENTS
+   DOM ELEMENTS
 ========================= */
 
 const form =
     document.getElementById("happeningForm");
+
+const messageBox =
+    document.getElementById("message");
+
+const happeningsList =
+    document.getElementById("happeningsList");
 
 const titleInput =
     document.getElementById("title");
@@ -20,11 +26,11 @@ const titleInput =
 const descriptionInput =
     document.getElementById("description");
 
-const locationInput =
-    document.getElementById("location");
-
 const categoryInput =
     document.getElementById("category");
+
+const locationInput =
+    document.getElementById("location");
 
 const eventDateInput =
     document.getElementById("eventDate");
@@ -35,22 +41,13 @@ const imageInput =
 const publishedInput =
     document.getElementById("published");
 
-const message =
-    document.getElementById("message");
-
-const happeningsList =
-    document.getElementById("happeningsList");
-
 
 /* =========================
-   AUTHENTICATION
+   AUTH
 ========================= */
 
 function getAdminToken() {
-
-    return localStorage.getItem(
-        "admin_token"
-    );
+    return localStorage.getItem("admin_token");
 }
 
 
@@ -59,40 +56,9 @@ function getAuthHeaders() {
     const token =
         getAdminToken();
 
-    if (!token) {
-
-        window.location.href =
-            "login.html";
-
-        return null;
-    }
-
     return {
-        "Authorization":
-            `Bearer ${token}`
-    };
-}
-
-
-function getJsonAuthHeaders() {
-
-    const token =
-        getAdminToken();
-
-    if (!token) {
-
-        window.location.href =
-            "login.html";
-
-        return null;
-    }
-
-    return {
-        "Content-Type":
-            "application/json",
-
-        "Authorization":
-            `Bearer ${token}`
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
     };
 }
 
@@ -102,31 +68,27 @@ function getJsonAuthHeaders() {
 ========================= */
 
 function showMessage(
-    text,
+    message,
     type = "success"
 ) {
 
-    if (!message) {
+    if (!messageBox) {
         return;
     }
 
-    message.textContent =
-        text;
+    messageBox.textContent =
+        message;
 
-    message.className =
+    messageBox.className =
         `message ${type}`;
 }
 
 
 /* =========================
-   CLOUDINARY IMAGE UPLOAD
+   CLOUDINARY
 ========================= */
 
 async function uploadImage(file) {
-
-    if (!file) {
-        return "";
-    }
 
     const formData =
         new FormData();
@@ -138,30 +100,30 @@ async function uploadImage(file) {
 
     formData.append(
         "upload_preset",
-        CLOUDINARY_PRESET
+        CLOUDINARY_UPLOAD_PRESET
     );
 
     const response =
         await fetch(
-            CLOUDINARY_URL,
+            CLOUDINARY_UPLOAD_URL,
             {
                 method: "POST",
                 body: formData
             }
         );
 
-    const result =
+    const data =
         await response.json();
 
     if (!response.ok) {
 
         throw new Error(
-            result.error?.message ||
+            data.error?.message ||
             "Image upload failed"
         );
     }
 
-    return result.secure_url;
+    return data.secure_url;
 }
 
 
@@ -169,164 +131,178 @@ async function uploadImage(file) {
    CREATE HAPPENING
 ========================= */
 
-form.addEventListener(
-    "submit",
-    async function (event) {
+if (form) {
 
-        event.preventDefault();
+    form.addEventListener(
+        "submit",
+        async function (event) {
 
-        const headers =
-            getJsonAuthHeaders();
+            event.preventDefault();
 
-        if (!headers) {
-            return;
-        }
+            showMessage("");
 
-        try {
+            const token =
+                getAdminToken();
 
-            showMessage(
-                "Saving happening...",
-                "success"
-            );
+            if (!token) {
+
+                window.location.href =
+                    "login.html";
+
+                return;
+            }
 
 
-            /* =========================
-               UPLOAD IMAGE
-            ========================= */
+            const title =
+                titleInput.value.trim();
 
-            let imageUrl = "";
+            const description =
+                descriptionInput.value.trim();
 
-            if (
-                imageInput &&
-                imageInput.files &&
-                imageInput.files.length > 0
-            ) {
+            const category =
+                categoryInput.value.trim();
+
+            const location =
+                locationInput.value.trim();
+
+            const eventDate =
+                eventDateInput.value;
+
+            const published =
+                publishedInput.checked;
+
+
+            if (!title) {
 
                 showMessage(
-                    "Uploading image...",
-                    "success"
+                    "Title is required",
+                    "error"
                 );
 
-                imageUrl =
-                    await uploadImage(
-                        imageInput.files[0]
-                    );
+                return;
             }
 
 
-            /* =========================
-               BUILD HAPPENING
-            ========================= */
+            if (!description) {
 
-            const happening = {
-
-                title:
-                    titleInput.value.trim(),
-
-                description:
-                    descriptionInput.value.trim(),
-
-                image_url:
-                    imageUrl,
-
-                location:
-                    locationInput.value.trim(),
-
-                event_date:
-                    eventDateInput.value
-                        ? new Date(
-                            eventDateInput.value
-                        ).toISOString()
-                        : null,
-
-                category:
-                    categoryInput.value.trim(),
-
-                published:
-                    publishedInput
-                        ? publishedInput.checked
-                        : false
-            };
-
-
-            /* =========================
-               VALIDATION
-            ========================= */
-
-            if (!happening.title) {
-
-                throw new Error(
-                    "Title is required."
+                showMessage(
+                    "Description is required",
+                    "error"
                 );
-            }
 
-            if (!happening.description) {
-
-                throw new Error(
-                    "Description is required."
-                );
-            }
-
-            if (!happening.category) {
-
-                throw new Error(
-                    "Category is required."
-                );
+                return;
             }
 
 
-            /* =========================
-               CREATE
-            ========================= */
+            if (!category) {
 
-            const response =
-                await fetch(
-                    `${API_BASE_URL}/admin/happenings`,
-                    {
-                        method: "POST",
-
-                        headers: headers,
-
-                        body:
-                            JSON.stringify(
-                                happening
-                            )
-                    }
+                showMessage(
+                    "Category is required",
+                    "error"
                 );
 
+                return;
+            }
 
-            const responseText =
-                await response.text();
-
-            let result = {};
 
             try {
 
-                result =
-                    responseText
-                        ? JSON.parse(
-                            responseText
-                        )
-                        : {};
+                let imageURL = "";
 
-            } catch (error) {
 
-                console.error(
-                    "Invalid JSON response:",
-                    responseText
+                /* =========================
+                   UPLOAD IMAGE
+                ========================= */
+
+                if (
+                    imageInput.files.length > 0
+                ) {
+
+                    showMessage(
+                        "Uploading image..."
+                    );
+
+                    imageURL =
+                        await uploadImage(
+                            imageInput.files[0]
+                        );
+                }
+
+
+                /* =========================
+                   PAYLOAD
+                ========================= */
+
+                const payload = {
+
+                    title:
+                        title,
+
+                    description:
+                        description,
+
+                    image_url:
+                        imageURL,
+
+                    location:
+                        location,
+
+                    event_date:
+                        eventDate || null,
+
+                    category:
+                        category,
+
+                    published:
+                        published
+                };
+
+
+                showMessage(
+                    "Creating happening..."
                 );
 
-                throw new Error(
-                    `Server returned an invalid response (${response.status}).`
-                );
-            }
+
+                /* =========================
+                   CREATE
+                ========================= */
+
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/admin/happenings`,
+                        {
+                            method: "POST",
+                            headers:
+                                getAuthHeaders(),
+                            body:
+                                JSON.stringify(
+                                    payload
+                                )
+                        }
+                    );
 
 
-            /* =========================
-               HANDLE ERRORS
-            ========================= */
+                const responseText =
+                    await response.text();
 
-            if (!response.ok) {
+                let data = {};
+
+                try {
+
+                    data =
+                        responseText
+                            ? JSON.parse(
+                                responseText
+                            )
+                            : {};
+
+                } catch (error) {
+
+                    throw new Error(
+                        "Invalid server response"
+                    );
+                }
+
 
                 if (
                     response.status === 401 ||
@@ -343,95 +319,83 @@ form.addEventListener(
                     return;
                 }
 
-                throw new Error(
-                    result.message ||
-                    `Unable to create happening (${response.status}).`
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error ||
+                        data.message ||
+                        "Failed to create happening"
+                    );
+                }
+
+
+                showMessage(
+                    data.message ||
+                    "Happening created successfully",
+                    "success"
+                );
+
+
+                form.reset();
+
+                await loadExistingHappenings();
+
+            } catch (error) {
+
+                console.error(
+                    "Create happening error:",
+                    error
+                );
+
+                showMessage(
+                    error.message ||
+                    "Something went wrong",
+                    "error"
                 );
             }
-
-
-            /* =========================
-               SUCCESS
-            ========================= */
-
-            showMessage(
-                result.message ||
-                "Happening created successfully.",
-                "success"
-            );
-
-
-            form.reset();
-
-
-            /*
-             * Reload the existing happenings
-             * so the new item appears immediately.
-             */
-
-            await loadExistingHappenings();
-
-        } catch (error) {
-
-            console.error(
-                "Create happening error:",
-                error
-            );
-
-            showMessage(
-                error.message ||
-                "Unable to create happening.",
-                "error"
-            );
         }
-    }
-);
+    );
+}
 
 
 /* =========================
-   LOAD EXISTING HAPPENINGS
+   UPDATE PUBLISHED STATUS
 ========================= */
 
-async function loadExistingHappenings() {
+async function updatePublishedStatus(
+    id,
+    published
+) {
 
-    if (!happeningsList) {
+    const token =
+        getAdminToken();
+
+    if (!token) {
+
+        window.location.href =
+            "login.html";
+
         return;
     }
-
-    const headers =
-        getAuthHeaders();
-
-    if (!headers) {
-        return;
-    }
-
-
-    happeningsList.innerHTML =
-        `
-        <p class="loading-text">
-            Loading happenings...
-        </p>
-        `;
 
 
     try {
 
-        /*
-         * The public endpoint returns
-         * published happenings only.
-         *
-         * Admin currently needs to see
-         * both published and unpublished
-         * records, so we request the
-         * public list first and render
-         * what the API provides.
-         */
-
         const response =
             await fetch(
-                `${API_BASE_URL}/happenings`,
+                `${API_BASE_URL}/admin/happenings/${id}/status`,
                 {
-                    method: "GET"
+                    method: "PUT",
+
+                    headers:
+                        getAuthHeaders(),
+
+                    body:
+                        JSON.stringify({
+                            published:
+                                published
+                        })
                 }
             );
 
@@ -439,11 +403,11 @@ async function loadExistingHappenings() {
         const responseText =
             await response.text();
 
-        let result = {};
+        let data = {};
 
         try {
 
-            result =
+            data =
                 responseText
                     ? JSON.parse(
                         responseText
@@ -453,23 +417,153 @@ async function loadExistingHappenings() {
         } catch (error) {
 
             throw new Error(
-                "Invalid response from happenings API."
+                "Invalid server response"
             );
+        }
+
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            localStorage.removeItem(
+                "admin_token"
+            );
+
+            window.location.href =
+                "login.html";
+
+            return;
         }
 
 
         if (!response.ok) {
 
             throw new Error(
-                result.message ||
-                `Unable to load happenings (${response.status}).`
+                data.error ||
+                data.message ||
+                "Failed to update status"
+            );
+        }
+
+
+        showMessage(
+            data.message ||
+            "Status updated successfully",
+            "success"
+        );
+
+
+        await loadExistingHappenings();
+
+    } catch (error) {
+
+        console.error(
+            "Update status error:",
+            error
+        );
+
+        showMessage(
+            error.message ||
+            "Failed to update status",
+            "error"
+        );
+    }
+}
+
+
+/* =========================
+   LOAD ADMIN HAPPENINGS
+========================= */
+
+async function loadExistingHappenings() {
+
+    if (!happeningsList) {
+        return;
+    }
+
+
+    const token =
+        getAdminToken();
+
+    if (!token) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+    }
+
+
+    happeningsList.innerHTML =
+        "Loading happenings...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_BASE_URL}/admin/happenings`,
+                {
+                    method: "GET",
+                    headers:
+                        getAuthHeaders()
+                }
+            );
+
+
+        const responseText =
+            await response.text();
+
+        let data = {};
+
+        try {
+
+            data =
+                responseText
+                    ? JSON.parse(
+                        responseText
+                    )
+                    : {};
+
+        } catch (error) {
+
+            throw new Error(
+                "Invalid server response"
+            );
+        }
+
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            localStorage.removeItem(
+                "admin_token"
+            );
+
+            window.location.href =
+                "login.html";
+
+            return;
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Failed to load happenings"
             );
         }
 
 
         const happenings =
-            Array.isArray(result.data)
-                ? result.data
+            Array.isArray(data.data)
+                ? data.data
                 : [];
 
 
@@ -478,11 +572,7 @@ async function loadExistingHappenings() {
         ) {
 
             happeningsList.innerHTML =
-                `
-                <p class="empty-text">
-                    No published happenings found.
-                </p>
-                `;
+                "<p>No happenings found.</p>";
 
             return;
         }
@@ -491,7 +581,165 @@ async function loadExistingHappenings() {
         happeningsList.innerHTML =
             happenings
                 .map(
-                    renderHappening
+                    function (item) {
+
+                        const status =
+                            item.published
+                                ? "Published"
+                                : "Unpublished";
+
+
+                        const statusClass =
+                            item.published
+                                ? "published"
+                                : "unpublished";
+
+
+                        const buttonText =
+                            item.published
+                                ? "Unpublish"
+                                : "Publish";
+
+
+                        const nextPublishedState =
+                            !item.published;
+
+
+                        const eventDate =
+                            item.event_date
+                                ? new Date(
+                                    item.event_date
+                                ).toLocaleString()
+                                : "No date";
+
+
+                        return `
+
+                            <div
+                                class="admin-happening"
+                                style="
+                                    display:flex;
+                                    gap:20px;
+                                    align-items:flex-start;
+                                    padding:20px 0;
+                                    border-bottom:1px solid #ddd;
+                                "
+                            >
+
+                                ${
+                                    item.image_url
+                                        ? `
+                                            <img
+                                                src="${escapeHTML(
+                                                    item.image_url
+                                                )}"
+                                                alt="${escapeHTML(
+                                                    item.title
+                                                )}"
+                                                style="
+                                                    width:120px;
+                                                    height:80px;
+                                                    object-fit:cover;
+                                                    border-radius:8px;
+                                                "
+                                            >
+                                          `
+                                        : ""
+                                }
+
+
+                                <div
+                                    style="
+                                        flex:1;
+                                    "
+                                >
+
+                                    <h3>
+                                        ${escapeHTML(
+                                            item.title
+                                        )}
+                                    </h3>
+
+
+                                    <p>
+                                        ${escapeHTML(
+                                            item.description
+                                        )}
+                                    </p>
+
+
+                                    <p>
+                                        <strong>
+                                            Category:
+                                        </strong>
+
+                                        ${escapeHTML(
+                                            item.category
+                                        )}
+                                    </p>
+
+
+                                    <p>
+                                        <strong>
+                                            Location:
+                                        </strong>
+
+                                        ${
+                                            escapeHTML(
+                                                item.location ||
+                                                "Not specified"
+                                            )
+                                        }
+                                    </p>
+
+
+                                    <p>
+                                        <strong>
+                                            Event date:
+                                        </strong>
+
+                                        ${escapeHTML(
+                                            eventDate
+                                        )}
+                                    </p>
+
+
+                                    <p>
+                                        <strong>
+                                            Status:
+                                        </strong>
+
+                                        <span
+                                            class="status ${statusClass}"
+                                        >
+                                            ${status}
+                                        </span>
+                                    </p>
+
+
+                                    <button
+                                        type="button"
+                                        onclick="updatePublishedStatus(
+                                            ${item.id},
+                                            ${nextPublishedState}
+                                        )"
+                                        style="
+                                            margin-top:10px;
+                                            padding:8px 14px;
+                                            border:none;
+                                            border-radius:6px;
+                                            cursor:pointer;
+                                        "
+                                    >
+                                        ${buttonText}
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        `;
+                    }
                 )
                 .join("");
 
@@ -503,184 +751,16 @@ async function loadExistingHappenings() {
             error
         );
 
-        happeningsList.innerHTML =
-            `
-            <p class="error-text">
-                Unable to load happenings.
+
+        happeningsList.innerHTML = `
+            <p class="error">
+                ${escapeHTML(
+                    error.message ||
+                    "Failed to load happenings"
+                )}
             </p>
-            `;
+        `;
     }
-}
-
-
-/* =========================
-   RENDER HAPPENING
-========================= */
-
-function renderHappening(item) {
-
-    const image =
-        item.image_url
-            ? item.image_url
-            : "";
-
-
-    const eventDate =
-        formatDate(
-            item.event_date
-        );
-
-
-    return `
-        <article class="admin-happening">
-
-            ${
-                image
-                    ? `
-                        <img
-                            src="${escapeHTML(image)}"
-                            alt="${escapeHTML(
-                                item.title
-                            )}"
-                            class="admin-happening-image"
-                        >
-                    `
-                    : `
-                        <div class="admin-happening-placeholder">
-                            No image
-                        </div>
-                    `
-            }
-
-
-            <div class="admin-happening-content">
-
-                <div class="admin-happening-header">
-
-                    <h3>
-                        ${escapeHTML(
-                            item.title
-                        )}
-                    </h3>
-
-                    <span
-                        class="happening-status ${
-                            item.published
-                                ? "published"
-                                : "unpublished"
-                        }"
-                    >
-                        ${
-                            item.published
-                                ? "Published"
-                                : "Unpublished"
-                        }
-                    </span>
-
-                </div>
-
-
-                <p>
-                    ${escapeHTML(
-                        item.description
-                    )}
-                </p>
-
-
-                ${
-                    item.category
-                        ? `
-                            <div>
-                                <strong>
-                                    Category:
-                                </strong>
-
-                                ${escapeHTML(
-                                    item.category
-                                )}
-                            </div>
-                        `
-                        : ""
-                }
-
-
-                ${
-                    item.location
-                        ? `
-                            <div>
-                                <strong>
-                                    Location:
-                                </strong>
-
-                                ${escapeHTML(
-                                    item.location
-                                )}
-                            </div>
-                        `
-                        : ""
-                }
-
-
-                ${
-                    eventDate
-                        ? `
-                            <div>
-                                <strong>
-                                    Event date:
-                                </strong>
-
-                                ${escapeHTML(
-                                    eventDate
-                                )}
-                            </div>
-                        `
-                        : ""
-                }
-
-            </div>
-
-        </article>
-    `;
-}
-
-
-/* =========================
-   DATE FORMATTER
-========================= */
-
-function formatDate(
-    dateValue
-) {
-
-    if (!dateValue) {
-        return "";
-    }
-
-
-    const date =
-        new Date(
-            dateValue
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "";
-    }
-
-
-    return date.toLocaleDateString(
-        "en-NG",
-        {
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        }
-    );
 }
 
 
@@ -700,31 +780,31 @@ function escapeHTML(value) {
 
 
     return String(value)
-        .replace(
-            /&/g,
+        .replaceAll(
+            "&",
             "&amp;"
         )
-        .replace(
-            /</g,
+        .replaceAll(
+            "<",
             "&lt;"
         )
-        .replace(
-            />/g,
+        .replaceAll(
+            ">",
             "&gt;"
         )
-        .replace(
-            /"/g,
+        .replaceAll(
+            '"',
             "&quot;"
         )
-        .replace(
-            /'/g,
+        .replaceAll(
+            "'",
             "&#039;"
         );
 }
 
 
 /* =========================
-   START
+   INITIAL LOAD
 ========================= */
 
 loadExistingHappenings();
