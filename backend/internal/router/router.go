@@ -117,10 +117,9 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 			)
 
 			// Happenings
-			admin.POST(
-				"/happenings",
-				happeningController.Create,
-			)
+			admin.POST("/happenings", happeningController.Create)
+			admin.GET("/happenings", happeningController.GetAllAdmin)
+			admin.PUT("/happenings/:id/status", happeningController.UpdatePublished)
 
 			// Premium listings
 			admin.GET(
