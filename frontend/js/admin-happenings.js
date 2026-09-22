@@ -43,11 +43,21 @@ const publishedInput =
 
 
 /* =========================
+   EDIT STATE
+========================= */
+
+let editingHappeningId = null;
+
+
+/* =========================
    AUTH
 ========================= */
 
 function getAdminToken() {
-    return localStorage.getItem("admin_token");
+
+    return localStorage.getItem(
+        "admin_token"
+    );
 }
 
 
@@ -85,7 +95,7 @@ function showMessage(
 
 
 /* =========================
-   CLOUDINARY
+   CLOUDINARY UPLOAD
 ========================= */
 
 async function uploadImage(file) {
@@ -128,7 +138,7 @@ async function uploadImage(file) {
 
 
 /* =========================
-   CREATE HAPPENING
+   CREATE / EDIT SUBMIT
 ========================= */
 
 if (form) {
@@ -207,12 +217,132 @@ if (form) {
 
             try {
 
+                /*
+                 * ========================
+                 * EDIT EXISTING HAPPENING
+                 * ========================
+                 */
+
+                if (
+                    editingHappeningId !== null
+                ) {
+
+                    const payload = {
+
+                        title:
+                            title,
+
+                        description:
+                            description,
+
+                        location:
+                            location,
+
+                        event_date:
+                            eventDate || null,
+
+                        category:
+                            category,
+
+                        published:
+                            published
+                    };
+
+
+                    showMessage(
+                        "Updating happening..."
+                    );
+
+
+                    const response =
+                        await fetch(
+                            `${API_BASE_URL}/admin/happenings/${editingHappeningId}`,
+                            {
+                                method: "PUT",
+
+                                headers:
+                                    getAuthHeaders(),
+
+                                body:
+                                    JSON.stringify(
+                                        payload
+                                    )
+                            }
+                        );
+
+
+                    const responseText =
+                        await response.text();
+
+                    let data = {};
+
+                    try {
+
+                        data =
+                            responseText
+                                ? JSON.parse(
+                                    responseText
+                                )
+                                : {};
+
+                    } catch (error) {
+
+                        throw new Error(
+                            "Invalid server response"
+                        );
+                    }
+
+
+                    if (
+                        response.status === 401 ||
+                        response.status === 403
+                    ) {
+
+                        localStorage.removeItem(
+                            "admin_token"
+                        );
+
+                        window.location.href =
+                            "login.html";
+
+                        return;
+                    }
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data.error ||
+                            data.message ||
+                            "Failed to update happening"
+                        );
+                    }
+
+
+                    showMessage(
+                        data.message ||
+                        "Happening updated successfully",
+                        "success"
+                    );
+
+
+                    cancelEdit();
+
+
+                    await loadExistingHappenings();
+
+                    return;
+                }
+
+
+                /*
+                 * ========================
+                 * CREATE NEW HAPPENING
+                 * ========================
+                 */
+
                 let imageURL = "";
 
-
-                /* =========================
-                   UPLOAD IMAGE
-                ========================= */
 
                 if (
                     imageInput.files.length > 0
@@ -228,10 +358,6 @@ if (form) {
                         );
                 }
 
-
-                /* =========================
-                   PAYLOAD
-                ========================= */
 
                 const payload = {
 
@@ -263,17 +389,15 @@ if (form) {
                 );
 
 
-                /* =========================
-                   CREATE
-                ========================= */
-
                 const response =
                     await fetch(
                         `${API_BASE_URL}/admin/happenings`,
                         {
                             method: "POST",
+
                             headers:
                                 getAuthHeaders(),
+
                             body:
                                 JSON.stringify(
                                     payload
@@ -344,7 +468,7 @@ if (form) {
             } catch (error) {
 
                 console.error(
-                    "Create happening error:",
+                    "Save happening error:",
                     error
                 );
 
@@ -356,6 +480,187 @@ if (form) {
             }
         }
     );
+}
+
+
+/* =========================
+   START EDIT
+========================= */
+
+function startEdit(happening) {
+
+    editingHappeningId =
+        happening.id;
+
+
+    titleInput.value =
+        happening.title || "";
+
+
+    descriptionInput.value =
+        happening.description || "";
+
+
+    categoryInput.value =
+        happening.category || "";
+
+
+    locationInput.value =
+        happening.location || "";
+
+
+    publishedInput.checked =
+        happening.published === true;
+
+
+    if (happening.event_date) {
+
+        const date =
+            new Date(
+                happening.event_date
+            );
+
+        const localDate =
+            new Date(
+                date.getTime() -
+                date.getTimezoneOffset() * 60000
+            )
+                .toISOString()
+                .slice(0, 16);
+
+        eventDateInput.value =
+            localDate;
+
+    } else {
+
+        eventDateInput.value =
+            "";
+    }
+
+
+    /*
+     * Browsers do not allow us
+     * to programmatically put an
+     * existing image into <input type=file>.
+     *
+     * Therefore the existing image
+     * remains untouched during editing.
+     */
+
+    imageInput.value = "";
+
+
+    updateFormMode();
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+
+    showMessage(
+        `Editing: ${happening.title}`,
+        "success"
+    );
+}
+
+
+/* =========================
+   CANCEL EDIT
+========================= */
+
+function cancelEdit() {
+
+    editingHappeningId =
+        null;
+
+    form.reset();
+
+    updateFormMode();
+
+    showMessage("");
+}
+
+
+/* =========================
+   FORM MODE
+========================= */
+
+function updateFormMode() {
+
+    const submitButton =
+        form.querySelector(
+            'button[type="submit"]'
+        );
+
+
+    if (!submitButton) {
+        return;
+    }
+
+
+    if (
+        editingHappeningId !== null
+    ) {
+
+        submitButton.textContent =
+            "Save Changes";
+
+
+        let cancelButton =
+            document.getElementById(
+                "cancelEditButton"
+            );
+
+
+        if (!cancelButton) {
+
+            cancelButton =
+                document.createElement(
+                    "button"
+                );
+
+            cancelButton.type =
+                "button";
+
+            cancelButton.id =
+                "cancelEditButton";
+
+            cancelButton.textContent =
+                "Cancel Edit";
+
+            cancelButton.style.marginLeft =
+                "10px";
+
+            cancelButton.addEventListener(
+                "click",
+                cancelEdit
+            );
+
+
+            submitButton.parentNode.appendChild(
+                cancelButton
+            );
+        }
+
+    } else {
+
+        submitButton.textContent =
+            "Create Happening";
+
+
+        const cancelButton =
+            document.getElementById(
+                "cancelEditButton"
+            );
+
+
+        if (cancelButton) {
+
+            cancelButton.remove();
+        }
+    }
 }
 
 
@@ -717,22 +1022,34 @@ async function loadExistingHappenings() {
                                     </p>
 
 
-                                    <button
-                                        type="button"
-                                        onclick="updatePublishedStatus(
-                                            ${item.id},
-                                            ${nextPublishedState}
-                                        )"
+                                    <div
                                         style="
-                                            margin-top:10px;
-                                            padding:8px 14px;
-                                            border:none;
-                                            border-radius:6px;
-                                            cursor:pointer;
+                                            margin-top:12px;
                                         "
                                     >
-                                        ${buttonText}
-                                    </button>
+
+                                        <button
+                                            type="button"
+                                            onclick='startEdit(${JSON.stringify(item)})'
+                                        >
+                                            Edit
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            onclick="updatePublishedStatus(
+                                                ${item.id},
+                                                ${nextPublishedState}
+                                            )"
+                                            style="
+                                                margin-left:8px;
+                                            "
+                                        >
+                                            ${buttonText}
+                                        </button>
+
+                                    </div>
 
                                 </div>
 
@@ -806,5 +1123,7 @@ function escapeHTML(value) {
 /* =========================
    INITIAL LOAD
 ========================= */
+
+updateFormMode();
 
 loadExistingHappenings();

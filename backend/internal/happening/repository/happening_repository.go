@@ -189,6 +189,65 @@ func (r *HappeningRepository) UpdatePublished(
 }
 
 /* =========================
+   UPDATE HAPPENING
+========================= */
+
+func (r *HappeningRepository) Update(h *model.Happening) error {
+
+	query := `
+		UPDATE happenings
+		SET
+			title = $1,
+			description = $2,
+			location = $3,
+			event_date = $4,
+			category = $5,
+			published = $6,
+			updated_at = NOW()
+		WHERE id = $7
+	`
+
+	commandTag, err := r.DB.Exec(
+		context.Background(),
+		query,
+		h.Title,
+		h.Description,
+		h.Location,
+		h.EventDate,
+		h.Category,
+		h.Published,
+		h.ID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+
+	return nil
+}
+func (r *HappeningRepository) Delete(id int64) error {
+	query := `
+		DELETE FROM happenings
+		WHERE id = $1
+	`
+
+	result, err := r.DB.Exec(context.Background(), query, id)
+	if err != nil {
+		return err
+	}
+
+	if result.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+
+	return nil
+}
+
+/* =========================
    CREATE HAPPENING
 ========================= */
 
