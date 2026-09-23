@@ -63,6 +63,26 @@ func (c *HappeningController) GetAllAdmin(ctx *gin.Context) {
 }
 
 /* =========================
+   ADMIN — DASHBOARD STATS
+========================= */
+
+func (c *HappeningController) GetStats(ctx *gin.Context) {
+
+	stats, err := c.Repository.GetStats()
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to fetch happening statistics",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": stats,
+	})
+}
+
+/* =========================
    ADMIN — CREATE HAPPENING
 ========================= */
 

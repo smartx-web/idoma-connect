@@ -21,29 +21,79 @@ const CLOUDINARY_UPLOAD_PRESET =
 
 
 /* =========================
+   AUTHENTICATION
+========================= */
+
+function getToken() {
+    return localStorage.getItem("admin_token");
+}
+
+function getAuthHeaders() {
+    const token = getToken();
+
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+    };
+}
+
+function handleUnauthorized() {
+    localStorage.removeItem("admin_token");
+    window.location.href = "login.html";
+}
+
+
+/* =========================
    LOAD APPROVED BUSINESSES
 ========================= */
 
 async function loadApprovedBusinesses() {
+
     try {
+
         const response = await fetch(
-            `${API_BASE_URL}/admin/businesses/approved`
+            `${API_BASE_URL}/admin/businesses/approved`,
+            {
+                headers: getAuthHeaders()
+            }
         );
 
-        if (!response.ok) {
-            throw new Error("Failed to load approved businesses");
+
+        if (response.status === 401) {
+            handleUnauthorized();
+            return;
         }
 
-        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to load approved businesses"
+            );
+        }
+
+
+        const result =
+            await response.json();
+
 
         businessId.innerHTML = `
-            <option value="">Select a business</option>
+            <option value="">
+                Select a business
+            </option>
         `;
 
-        result.data.forEach((business) => {
-            const option = document.createElement("option");
 
-            option.value = business.id;
+        const businesses =
+            result.data || [];
+
+
+        businesses.forEach((business) => {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                business.id;
 
             option.textContent =
                 `${business.name} — ${business.lga}`;
@@ -51,7 +101,9 @@ async function loadApprovedBusinesses() {
             businessId.appendChild(option);
         });
 
+
     } catch (error) {
+
         console.error(error);
 
         businessId.innerHTML = `
@@ -67,26 +119,35 @@ async function loadApprovedBusinesses() {
    IMAGE PREVIEW
 ========================= */
 
-image.addEventListener("change", () => {
-    const file = image.files[0];
+image.addEventListener(
+    "change",
+    () => {
 
-    if (!file) {
-        imagePreview.innerHTML =
-            "No image selected";
+        const file =
+            image.files[0];
 
-        return;
+
+        if (!file) {
+
+            imagePreview.innerHTML =
+                "No image selected";
+
+            return;
+        }
+
+
+        const imageURL =
+            URL.createObjectURL(file);
+
+
+        imagePreview.innerHTML = `
+            <img
+                src="${imageURL}"
+                alt="Premium listing preview"
+            >
+        `;
     }
-
-    const imageURL =
-        URL.createObjectURL(file);
-
-    imagePreview.innerHTML = `
-        <img
-            src="${imageURL}"
-            alt="Premium listing preview"
-        >
-    `;
-});
+);
 
 
 /* =========================
@@ -94,31 +155,44 @@ image.addEventListener("change", () => {
 ========================= */
 
 async function uploadImage(file) {
-    const formData = new FormData();
 
-    formData.append("file", file);
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "file",
+        file
+    );
+
 
     formData.append(
         "upload_preset",
         CLOUDINARY_UPLOAD_PRESET
     );
 
-    const response = await fetch(
-        CLOUDINARY_UPLOAD_URL,
-        {
-            method: "POST",
-            body: formData
-        }
-    );
+
+    const response =
+        await fetch(
+            CLOUDINARY_UPLOAD_URL,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
 
     if (!response.ok) {
+
         throw new Error(
             "Image upload failed"
         );
     }
 
+
     const result =
         await response.json();
+
 
     return result.secure_url;
 }
@@ -129,24 +203,44 @@ async function uploadImage(file) {
 ========================= */
 
 async function loadPremiumListings() {
+
     try {
-        const response = await fetch(
-            `${API_BASE_URL}/admin/premium`
-        );
+
+        const response =
+            await fetch(
+                `${API_BASE_URL}/admin/premium`,
+                {
+                    headers: getAuthHeaders()
+                }
+            );
+
+
+        if (response.status === 401) {
+
+            handleUnauthorized();
+
+            return;
+        }
+
 
         if (!response.ok) {
+
             throw new Error(
                 "Failed to load premium listings"
             );
         }
 
+
         const result =
             await response.json();
 
-        if (
-            !result.data ||
-            result.data.length === 0
-        ) {
+
+        const listings =
+            result.data || [];
+
+
+        if (listings.length === 0) {
+
             listingList.innerHTML = `
                 <div class="empty-state">
                     No premium listings yet.
@@ -156,12 +250,15 @@ async function loadPremiumListings() {
             return;
         }
 
+
         listingList.innerHTML = "";
 
-        result.data.forEach((listing) => {
+
+        listings.forEach((listing) => {
 
             const item =
                 document.createElement("div");
+
 
             item.className =
                 "listing-item";
@@ -194,6 +291,7 @@ async function loadPremiumListings() {
                     ? "active"
                     : "inactive";
 
+
             const statusText =
                 listing.active
                     ? "Active"
@@ -208,6 +306,7 @@ async function loadPremiumListings() {
                 listing.active
                     ? "Deactivate"
                     : "Activate";
+
 
             const nextStatus =
                 !listing.active;
@@ -282,13 +381,13 @@ async function loadPremiumListings() {
                 </div>
             `;
 
+
             listingList.appendChild(item);
         });
 
 
-        /* Attach button events */
-
         attachStatusButtons();
+
 
     } catch (error) {
 
@@ -314,6 +413,7 @@ function attachStatusButtons() {
             ".status-button"
         );
 
+
     buttons.forEach((button) => {
 
         button.addEventListener(
@@ -323,13 +423,14 @@ function attachStatusButtons() {
                 const id =
                     button.dataset.id;
 
+
                 const newActiveStatus =
                     button.dataset.active === "true";
 
 
-                /* Disable button */
+                button.disabled =
+                    true;
 
-                button.disabled = true;
 
                 button.textContent =
                     "Updating...";
@@ -343,17 +444,24 @@ function attachStatusButtons() {
                             {
                                 method: "PUT",
 
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
+                                headers:
+                                    getAuthHeaders(),
 
-                                body: JSON.stringify({
-                                    active:
-                                        newActiveStatus
-                                })
+                                body:
+                                    JSON.stringify({
+                                        active:
+                                            newActiveStatus
+                                    })
                             }
                         );
+
+
+                    if (response.status === 401) {
+
+                        handleUnauthorized();
+
+                        return;
+                    }
 
 
                     const result =
@@ -361,20 +469,22 @@ function attachStatusButtons() {
 
 
                     if (!response.ok) {
+
                         throw new Error(
                             result.message ||
+                            result.error ||
                             "Failed to update premium listing"
                         );
                     }
 
 
-                    /* Refresh listings */
-
                     await loadPremiumListings();
+
 
                 } catch (error) {
 
                     console.error(error);
+
 
                     showMessage(
                         error.message ||
@@ -382,8 +492,10 @@ function attachStatusButtons() {
                         "error"
                     );
 
+
                     button.disabled =
                         false;
+
 
                     button.textContent =
                         newActiveStatus
@@ -404,8 +516,10 @@ function showMessage(
     text,
     type
 ) {
+
     message.textContent =
         text;
+
 
     message.className =
         `message ${type}`;
@@ -423,16 +537,17 @@ premiumForm.addEventListener(
         event.preventDefault();
 
 
-        /* Disable submit */
-
         submitBtn.disabled =
             true;
+
 
         submitBtn.textContent =
             "Creating...";
 
+
         message.className =
             "message";
+
 
         message.textContent =
             "";
@@ -466,6 +581,7 @@ premiumForm.addEventListener(
                         startDate.value
                     ).toISOString()
                     : null;
+
 
             const endDateValue =
                 endDate.value
@@ -516,10 +632,8 @@ premiumForm.addEventListener(
                     {
                         method: "POST",
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
+                        headers:
+                            getAuthHeaders(),
 
                         body:
                             JSON.stringify(
@@ -527,6 +641,14 @@ premiumForm.addEventListener(
                             )
                     }
                 );
+
+
+            if (response.status === 401) {
+
+                handleUnauthorized();
+
+                return;
+            }
 
 
             const result =
@@ -537,6 +659,7 @@ premiumForm.addEventListener(
 
                 throw new Error(
                     result.message ||
+                    result.error ||
                     "Failed to create premium listing"
                 );
             }
@@ -554,20 +677,22 @@ premiumForm.addEventListener(
 
             premiumForm.reset();
 
+
             active.checked =
                 true;
+
 
             imagePreview.innerHTML =
                 "No image selected";
 
 
-            /* Refresh listings */
-
             await loadPremiumListings();
+
 
         } catch (error) {
 
             console.error(error);
+
 
             showMessage(
                 error.message ||
@@ -575,10 +700,12 @@ premiumForm.addEventListener(
                 "error"
             );
 
+
         } finally {
 
             submitBtn.disabled =
                 false;
+
 
             submitBtn.textContent =
                 "Create Premium Listing";

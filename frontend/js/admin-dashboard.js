@@ -6,92 +6,178 @@ const rejectedCount = document.getElementById("rejectedCount");
 const happeningsCount = document.getElementById("happeningsCount");
 const activityList = document.getElementById("activityList");
 
-function getAdminToken() {
+function getToken() {
     return localStorage.getItem("admin_token");
 }
 
-async function fetchJSON(url) {
-    const token = localStorage.getItem("admin_token");
+function getAuthHeaders() {
+    const token = getToken();
 
-    console.log("Using token:", token ? "YES" : "NO");
-
-    const response = await fetch(url, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
-
-    console.log(url, response.status);
-
-    if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+    if (!token) {
+        redirectToLogin();
+        return null;
     }
 
-    return response.json();
+    return {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+    };
 }
 
+function redirectToLogin() {
+    localStorage.removeItem("admin_token");
+    window.location.href = "login.html";
+}
+
+async function fetchJSON(url) {
+    const headers = getAuthHeaders();
+
+    if (!headers) {
+        return null;
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: headers
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            redirectToLogin();
+            return null;
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                `Request failed with status ${response.status}`
+            );
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error("Dashboard request failed:", error);
+        throw error;
+    }
+}
+
+function setCount(element, value) {
+    if (!element) {
+        return;
+    }
+
+    element.textContent = value ?? 0;
+}
+
+function renderActivity(stats, pendingBusinesses) {
+    if (!activityList) {
+        return;
+    }
+
+    const published =
+        stats?.data?.published ?? 0;
+
+    const unpublished =
+        stats?.data?.unpublished ?? 0;
+
+    const pending =
+        pendingBusinesses?.count ?? 0;
+
+    activityList.innerHTML = "";
+
+    const activities = [
+        {
+            label: "Published happenings",
+            value: published
+        },
+        {
+            label: "Unpublished happenings",
+            value: unpublished
+        },
+        {
+            label: "Pending business approvals",
+            value: pending
+        }
+    ];
+
+    activities.forEach((activity) => {
+        const item = document.createElement("div");
+        item.className = "activity-item";
+
+        const label = document.createElement("span");
+        label.textContent = activity.label;
+
+        const value = document.createElement("strong");
+        value.textContent = activity.value;
+
+        item.appendChild(label);
+        item.appendChild(value);
+
+        activityList.appendChild(item);
+    });
+}
+
+function showDashboardError() {
+    if (!activityList) {
+        return;
+    }
+
+    activityList.innerHTML = "";
+
+    const errorMessage = document.createElement("div");
+    errorMessage.className = "error";
+    errorMessage.textContent =
+        "Unable to load dashboard data. Please refresh the page.";
+
+    activityList.appendChild(errorMessage);
+}
 
 async function loadDashboard() {
     try {
-
         const [
             approved,
             pending,
             rejected,
-            happenings
+            happeningStats
         ] = await Promise.all([
             fetchJSON(`${API}/admin/businesses/approved`),
             fetchJSON(`${API}/admin/businesses/pending`),
             fetchJSON(`${API}/admin/businesses/rejected`),
-            fetchJSON(`${API}/happenings`)
+            fetchJSON(`${API}/admin/happenings/stats`)
         ]);
 
-        if (!approved || !pending || !rejected || !happenings) {
+        if (!approved || !pending || !rejected || !happeningStats) {
             return;
         }
 
-        approvedCount.textContent = approved.count ?? 0;
-        pendingCount.textContent = pending.count ?? 0;
-        rejectedCount.textContent = rejected.count ?? 0;
+        setCount(
+            approvedCount,
+            approved.count
+        );
 
-        const happeningsData = Array.isArray(happenings.data)
-            ? happenings.data
-            : [];
+        setCount(
+            pendingCount,
+            pending.count
+        );
 
-        happeningsCount.textContent = happeningsData.length;
+        setCount(
+            rejectedCount,
+            rejected.count
+        );
 
-        activityList.innerHTML = `
-            <div class="activity-item">
-                <span>Approved businesses</span>
-                <strong>${approved.count ?? 0}</strong>
-            </div>
+        setCount(
+            happeningsCount,
+            happeningStats?.data?.total
+        );
 
-            <div class="activity-item">
-                <span>Pending submissions</span>
-                <strong>${pending.count ?? 0}</strong>
-            </div>
-
-            <div class="activity-item">
-                <span>Rejected businesses</span>
-                <strong>${rejected.count ?? 0}</strong>
-            </div>
-
-            <div class="activity-item">
-                <span>Total happenings</span>
-                <strong>${happeningsData.length}</strong>
-            </div>
-        `;
+        renderActivity(
+            happeningStats,
+            pending
+        );
 
     } catch (error) {
-        console.error("Dashboard error:", error);
-
-        activityList.innerHTML = `
-            <div style="color:#b42318">
-                Unable to connect to the API.
-            </div>
-        `;
-
+        console.error("Failed to load dashboard:", error);
+        showDashboardError();
     }
 }
 

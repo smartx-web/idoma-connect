@@ -157,6 +157,45 @@ func (r *HappeningRepository) GetAllAdmin() ([]model.Happening, error) {
 
 	return happenings, nil
 }
+
+/* =========================
+   DASHBOARD STATS
+========================= */
+
+func (r *HappeningRepository) GetStats() (map[string]int, error) {
+
+	query := `
+		SELECT
+			COUNT(*) AS total,
+			COUNT(*) FILTER (WHERE published = TRUE) AS published,
+			COUNT(*) FILTER (WHERE published = FALSE) AS unpublished
+		FROM happenings
+	`
+
+	var total int
+	var published int
+	var unpublished int
+
+	err := r.DB.QueryRow(
+		context.Background(),
+		query,
+	).Scan(
+		&total,
+		&published,
+		&unpublished,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]int{
+		"total":       total,
+		"published":   published,
+		"unpublished": unpublished,
+	}, nil
+}
+
 func (r *HappeningRepository) UpdatePublished(
 	id int64,
 	published bool,
