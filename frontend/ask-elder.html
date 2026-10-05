@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Ask an Elder | IDOMA-CONNECT</title>
+
+<link
+    rel="stylesheet"
+    href="css/style.css"
+>
+
+<link
+    rel="stylesheet"
+    href="css/ask-elder.css"
+>
+
+</head>
+
+<body>
+
+<!-- ================= NAVIGATION ================= -->
+
+<header class="navbar">
+
+    <div class="logo">
+
+        <h2>
+            IDOMA<span>-CONNECT</span>
+        </h2>
+
+        <small>
+            The Digital Gateway to Idoma Land
+        </small>
+
+    </div>
+
+    <nav>
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a href="businesses.html">
+            Businesses
+        </a>
+
+        <a href="hall-of-fame.html">
+            Hall of Fame
+        </a>
+
+        <a href="heritage.html">
+            Heritage
+        </a>
+
+        <a href="ask-elder.html" class="active">
+            Ask an Elder
+        </a>
+
+        <a href="index.html#about">
+            About
+        </a>
+
+    </nav>
+
+</header>
+
+
+<!-- ================= MAIN ================= -->
+
+<main>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="elder-hero">
+
+    <div class="elder-hero-content">
+
+        <p class="elder-label">
+            IDOMA LIVING KNOWLEDGE
+        </p>
+
+        <h1>
+            Ask an <span>Elder.</span>
+        </h1>
+
+        <p class="elder-intro">
+            Explore the wisdom, stories, traditions and lived
+            experiences of Idoma elders through a growing
+            digital archive of our living heritage.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ================= ASK SECTION ================= -->
+
+<section class="ask-section">
+
+    <div class="ask-container">
+
+
+        <div class="ask-heading">
+
+            <p class="section-label">
+                ASK THE ARCHIVE
+            </p>
+
+            <h2>
+                What would you like to know about Idoma?
+            </h2>
+
+            <p>
+                Ask about traditions, festivals, places, people,
+                customs, language and the stories passed down
+                through generations.
+            </p>
+
+        </div>
+
+
+        <!-- ================= QUESTION FORM ================= -->
+
+        <form
+            id="askForm"
+            class="ask-form"
+        >
+
+            <label for="question">
+                Your question
+            </label>
+
+            <div class="question-box">
+
+                <textarea
+                    id="question"
+                    name="question"
+                    rows="4"
+                    placeholder="e.g. What is the significance of Idoma traditional marriage?"
+                    required
+                ></textarea>
+
+                <button
+                    type="submit"
+                    id="askButton"
+                >
+
+                    <span id="askButtonText">
+                        Ask an Elder
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <!-- ================= LOADING ================= -->
+
+        <div
+            id="loadingState"
+            class="loading-state hidden"
+        >
+
+            <div class="loading-spinner"></div>
+
+            <p>
+                Searching the living knowledge archive...
+            </p>
+
+        </div>
+
+
+        <!-- ================= ERROR ================= -->
+
+        <div
+            id="errorState"
+            class="response-message error-response hidden"
+        ></div>
+
+
+        <!-- ================= ANSWER ================= -->
+
+        <section
+            id="answerSection"
+            class="answer-section hidden"
+        >
+
+
+            <!-- ================= ANSWER HEADER ================= -->
+
+            <div class="answer-header">
+
+                <div>
+
+                    <p class="section-label">
+                        ARCHIVE RESPONSE
+                    </p>
+
+                    <h2>
+                        What the archive says
+                    </h2>
+
+                </div>
+
+                <span
+                    id="answerKind"
+                    class="answer-kind"
+                ></span>
+
+            </div>
+
+
+            <!-- ================= ARCHIVE ANSWER ================= -->
+
+            <div
+                id="answerContent"
+                class="answer-content"
+            ></div>
+
+
+            <!-- ================= ARCHIVE SOURCES ================= -->
+
+            <div
+                id="sourcesSection"
+                class="sources-section hidden"
+            >
+
+                <div class="sources-heading">
+
+                    <p class="section-label">
+                        ARCHIVE SOURCES
+                    </p>
+
+                    <h3>
+                        Recorded knowledge
+                    </h3>
+
+                    <p>
+                        These are the archive records used to answer
+                        your question. Where available, you can
+                        listen to the original recording.
+                    </p>
+
+                </div>
+
+                <div
+                    id="sourcesList"
+                    class="sources-list"
+                ></div>
+
+            </div>
+
+
+            <!-- ================= BACKGROUND RESEARCH ================= -->
+
+            <div
+                id="backgroundSection"
+                class="background-section hidden"
+            >
+
+                <div class="background-heading">
+
+                    <p class="section-label">
+                        BACKGROUND RESEARCH
+                    </p>
+
+                    <h3>
+                        More context
+                    </h3>
+
+                    <p>
+                        This section provides broader background
+                        information related to your question. It is
+                        separate from recorded elder testimony.
+                    </p>
+
+                </div>
+
+                <div
+                    id="backgroundContent"
+                    class="background-content"
+                ></div>
+
+            </div>
+
+
+            <!-- ================= WEB SOURCES ================= -->
+
+            <div
+                id="webSourcesSection"
+                class="web-sources-section hidden"
+            >
+
+                <div class="web-sources-heading">
+
+                    <p class="section-label">
+                        FURTHER READING
+                    </p>
+
+                    <h3>
+                        Research sources
+                    </h3>
+
+                    <p>
+                        Explore the external sources used for the
+                        background research.
+                    </p>
+
+                </div>
+
+                <ul
+                    id="webSourcesList"
+                    class="web-sources-list"
+                ></ul>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- ================= NO MATCH ================= -->
+
+        <div
+            id="noMatchState"
+            class="no-match hidden"
+        >
+
+            <p class="section-label">
+                THE ARCHIVE IS STILL GROWING
+            </p>
+
+            <h3>
+                We couldn't find a matching recording yet.
+            </h3>
+
+            <p>
+                This question is not currently covered by the
+                available archive. As more elders share their
+                knowledge, this living library will continue to grow.
+            </p>
+
+        </div>
+
+
+        <!-- ================= HERITAGE MESSAGE ================= -->
+
+        <div class="elder-message">
+
+            <p>
+                <strong>
+                    Preserve the knowledge. Preserve the story.
+                </strong>
+            </p>
+
+            <p>
+                Every elder carries a piece of our collective memory.
+                IDOMA-CONNECT is building a digital gateway where
+                those voices can be preserved, discovered and passed
+                to generations yet unborn.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+</main>
+
+
+<!-- ================= SCRIPT ================= -->
+
+<script src="js/ask-elder.js"></script>
+
+</body>
+
+</html>

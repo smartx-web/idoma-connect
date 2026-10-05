@@ -46,6 +46,8 @@
 
 <nav>
 
+   <nav>
+
     <a href="index.html">
         Home
     </a>
@@ -60,6 +62,10 @@
 
     <a href="heritage.html">
         Heritage
+    </a>
+
+    <a href="ask-elder.html">
+        Ask an Elder
     </a>
 
     <a href="#about">
@@ -368,32 +374,34 @@ function searchFromHome() {
     </div>
 
 
-    <!-- ================= ASK AN ELDER ================= -->
+   <!-- ================= ASK AN ELDER ================= -->
 
-    <div
-        class="card"
-        onclick="alert('Ask an Elder coming soon!')"
-    >
+<div
+    class="card"
+    onclick="window.location.href='ask-elder.html'"
+    role="link"
+    tabindex="0"
+    onkeydown="if (event.key === 'Enter' || event.key === ' ') window.location.href='ask-elder.html'"
+>
 
-        <div class="card-icon">
-            🤖
-        </div>
-
-        <h3>
-            Ask an Elder
-        </h3>
-
-        <p>
-            Learn Idoma language, proverbs and wisdom from our
-            digital elder.
-        </p>
-
-        <span>
-            Ask →
-        </span>
-
+    <div class="card-icon">
+        🤖
     </div>
 
+    <h3>
+        Ask an Elder
+    </h3>
+
+    <p>
+        Learn Idoma language, proverbs and wisdom from our
+        digital elder.
+    </p>
+
+    <span>
+        Ask →
+    </span>
+
+</div>
 
     <!-- ================= IDOMA SOUNDS ================= -->
 
