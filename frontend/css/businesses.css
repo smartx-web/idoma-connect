@@ -239,3 +239,10 @@ nav a{
     }
 
 }
+
+.near-me-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:26px;padding:18px;border:1px solid #dedbd5;border-radius:14px;background:white}
+.near-me-tools button{padding:12px 20px;border:0;border-radius:8px;background:#d71920;color:white;cursor:pointer;font-weight:700}
+.near-me-tools button:disabled{opacity:.6;cursor:wait}
+.near-me-tools #clearNearMe{background:#222}
+.near-me-tools p{flex:1;min-width:200px;font-size:.9rem;color:#555}
+.distance{display:inline-block;margin:0 0 14px;padding:5px 10px;border-radius:20px;background:#fce7e8;color:#a51019;font-size:.85rem;font-weight:700}
