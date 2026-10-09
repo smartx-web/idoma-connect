@@ -8,15 +8,20 @@ const slides =
 const dots =
     document.querySelectorAll(".spotlight-dot");
 
-const SLIDE_DURATION = 10000;
+const SLIDE_DURATION = 8000;
 
 let currentSlide = 0;
 let slideTimer;
+let userPaused = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let hoverPaused = false;
+let focusPaused = false;
 
 
 function showSlide(index) {
 
     slides.forEach((slide, i) => {
+        slide.inert = i !== index;
+        slide.setAttribute("aria-hidden", String(i !== index));
 
         slide.classList.toggle(
             "active",
@@ -59,7 +64,7 @@ function startSlider() {
 
     clearInterval(slideTimer);
 
-    if (slides.length > 1) {
+    if (slides.length > 1 && !userPaused && !hoverPaused && !focusPaused && !document.hidden) {
 
         slideTimer =
             setInterval(
@@ -232,8 +237,9 @@ function renderHappening(
     happening
 ) {
 
+    setSlidePhoto(container.closest(".spotlight-slide"), happening.image_url);
     const image =
-        happening.image_url
+        happening.image_url && !happening.image_url.includes("example.com")
             ? `
                 <img
                     src="${escapeHTML(
@@ -479,8 +485,18 @@ async function loadPremiumFeatured() {
         }
 
 
-        const listing =
-            listings[0];
+        const listing = listings[0];
+        // Reuse the approved business photo if the promotion has no separate image.
+        if (!listing.image_url && listing.business_id) {
+            try {
+                const businessResponse = await fetch(`${API_BASE_URL}/businesses/${encodeURIComponent(listing.business_id)}`);
+                if (businessResponse.ok) {
+                    const businessResult = await businessResponse.json();
+                    listing.image_url = businessResult.data?.image_url || "";
+                }
+            } catch (_) {}
+        }
+        setSlidePhoto(container.closest(".spotlight-slide"), listing.image_url);
 
 
         container.innerHTML = `
@@ -606,3 +622,37 @@ function showPremiumFallback(
 loadHappenings();
 
 loadPremiumFeatured();
+
+const spotlight = document.querySelector(".spotlight");
+const pauseButton = document.getElementById("pauseSpotlight");
+function updatePauseButton() {
+    pauseButton.textContent = userPaused ? "Play" : "Pause";
+    pauseButton.setAttribute("aria-label", userPaused ? "Play slideshow" : "Pause slideshow");
+}
+updatePauseButton();
+pauseButton.addEventListener("click", () => { userPaused = !userPaused; updatePauseButton(); startSlider(); });
+document.getElementById("previousSpotlight").addEventListener("click", () => { showSlide((currentSlide - 1 + slides.length) % slides.length); startSlider(); });
+document.getElementById("nextSpotlight").addEventListener("click", () => { nextSlide(); startSlider(); });
+spotlight.addEventListener("mouseenter", () => { hoverPaused = true; startSlider(); });
+spotlight.addEventListener("mouseleave", () => { hoverPaused = false; startSlider(); });
+spotlight.addEventListener("focusin", () => { focusPaused = true; startSlider(); });
+spotlight.addEventListener("focusout", event => { focusPaused = spotlight.contains(event.relatedTarget); startSlider(); });
+document.addEventListener("visibilitychange", startSlider);
+function setSlidePhoto(slide, url) {
+    if (!slide || !url) return;
+    try {
+        const parsed = new URL(url, window.location.href);
+        if (!["https:", "http:"].includes(parsed.protocol) || parsed.hostname === "example.com") return;
+        const photo = document.createElement("img");
+        photo.className = "spotlight-background-photo";
+        photo.alt = "";
+        photo.decoding = "async";
+        photo.addEventListener("load", () => slide.prepend(photo));
+        photo.src = parsed.href;
+    } catch (_) {}
+}
+setSlidePhoto(slides[0], "images/heritage/traditional-dance.jpg");
+setSlidePhoto(slides[3], "images/heritage/ochidoma-palace.jpg");
+document.addEventListener("error", event => {
+    if (event.target.matches?.(".premium-featured-image, .happening-featured-image")) event.target.style.display = "none";
+}, true);
