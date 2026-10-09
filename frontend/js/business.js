@@ -1,5 +1,5 @@
 const API_BASE_URL =
-    "http://localhost:8080/api/v1";
+    "https://idoma-connect-api.onrender.com/api/v1";
 
 const BUSINESS_API =
     `${API_BASE_URL}/businesses`;

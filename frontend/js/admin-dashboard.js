@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api/v1";
+const API = "https://idoma-connect-api.onrender.com/api/v1";
 
 const approvedCount = document.getElementById("approvedCount");
 const pendingCount = document.getElementById("pendingCount");

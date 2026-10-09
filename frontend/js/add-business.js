@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/v1/businesses";
+const API_URL = "https://idoma-connect-api.onrender.com/api/v1/businesses";
 
 const CLOUD_NAME = "gvmcwi4b";
 const UPLOAD_PRESET = "idoma_connect_upload";

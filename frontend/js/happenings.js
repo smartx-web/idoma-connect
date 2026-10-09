@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/v1/happenings";
+const API_URL = "https://idoma-connect-api.onrender.com/api/v1/happenings";
 
 const loading = document.getElementById("loading");
 const grid = document.getElementById("happeningsGrid");

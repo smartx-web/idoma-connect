@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8080/api/v1";
+const API_BASE_URL = "https://idoma-connect-api.onrender.com/api/v1";
 
 const CLOUDINARY_UPLOAD_URL =
     "https://api.cloudinary.com/v1_1/gvmcwi4b/image/upload";

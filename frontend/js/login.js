@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api/v1/auth/login";
+const API = "https://idoma-connect-api.onrender.com/api/v1/auth/login";
 
 const form = document.getElementById("loginForm");
 const username = document.getElementById("username");
