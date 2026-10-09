@@ -176,7 +176,7 @@ async function loadPendingBusinesses() {
         `;
 
 
-        updatePendingCount(0);
+        pendingCount.textContent = "Unavailable";
     }
 }
 
@@ -214,6 +214,8 @@ function renderBusinesses(
                     "article"
                 );
 
+
+            businessItem.id = "business-" + business.id;
 
             businessItem.className =
                 "business-item";

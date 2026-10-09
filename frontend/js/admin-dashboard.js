@@ -132,48 +132,53 @@ function showDashboardError() {
     activityList.appendChild(errorMessage);
 }
 
+function renderPendingBusinesses(result) {
+    const list = document.getElementById("pendingBusinessesList");
+    if (!list) return;
+    list.replaceChildren();
+    if (!Array.isArray(result?.data)) {
+        list.textContent = "Unable to load pending businesses. Refresh to try again.";
+        return;
+    }
+    if (result.data.length === 0) {
+        list.textContent = "No business submissions are waiting for review.";
+        return;
+    }
+    result.data.forEach(business => {
+        const item = document.createElement("div");
+        item.className = "activity-item";
+        item.style.gap = "16px";
+        item.style.flexWrap = "wrap";
+        const detail = document.createElement("span");
+        detail.textContent = [business.name, business.category, business.lga].filter(Boolean).join(" · ");
+        const review = document.createElement("a");
+        review.href = "businesses.html#business-" + encodeURIComponent(business.id);
+        review.textContent = "Review submission";
+        item.appendChild(detail);
+        item.appendChild(review);
+        list.appendChild(item);
+    });
+}
+
 async function loadDashboard() {
     try {
-        const [
-            approved,
-            pending,
-            rejected,
-            happeningStats
-        ] = await Promise.all([
+        const results = await Promise.allSettled([
             fetchJSON(`${API}/admin/businesses/approved`),
             fetchJSON(`${API}/admin/businesses/pending`),
             fetchJSON(`${API}/admin/businesses/rejected`),
             fetchJSON(`${API}/admin/happenings/stats`)
         ]);
-
-        if (!approved || !pending || !rejected || !happeningStats) {
-            return;
+        const [approved, pending, rejected, happeningStats] =
+            results.map(result => result.status === "fulfilled" ? result.value : null);
+        setCount(approvedCount, approved ? approved.count : "Unavailable");
+        setCount(pendingCount, pending ? pending.count : "Unavailable");
+        setCount(rejectedCount, rejected ? rejected.count : "Unavailable");
+        setCount(happeningsCount, happeningStats ? happeningStats?.data?.total : "Unavailable");
+        renderPendingBusinesses(pending);
+        renderActivity(happeningStats, pending);
+        if (results.some(result => result.status === "rejected")) {
+            showDashboardError();
         }
-
-        setCount(
-            approvedCount,
-            approved.count
-        );
-
-        setCount(
-            pendingCount,
-            pending.count
-        );
-
-        setCount(
-            rejectedCount,
-            rejected.count
-        );
-
-        setCount(
-            happeningsCount,
-            happeningStats?.data?.total
-        );
-
-        renderActivity(
-            happeningStats,
-            pending
-        );
 
     } catch (error) {
         console.error("Failed to load dashboard:", error);
@@ -181,4 +186,5 @@ async function loadDashboard() {
     }
 }
 
+document.getElementById("refreshDashboard")?.addEventListener("click", loadDashboard);
 loadDashboard();
