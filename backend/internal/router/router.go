@@ -347,6 +347,8 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 			// Songs
 			// -------------------------------------------------
 
+			admin.GET("/sounds/songs", soundSongController.GetAll)
+
 			admin.POST(
 				"/sounds/songs",
 				soundSongController.Create,

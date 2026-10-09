@@ -197,3 +197,18 @@ func (c *SongController) IncrementPlayCount(ctx *gin.Context) {
 		"message": "play count updated",
 	})
 }
+
+func (c *SongController) GetAll(ctx *gin.Context) {
+	songs, err := c.repo.GetAll(ctx.Request.Context())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "failed to fetch songs",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": songs,
+	})
+}
+

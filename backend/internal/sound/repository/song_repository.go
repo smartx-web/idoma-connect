@@ -344,3 +344,68 @@ func (r *SongRepository) IncrementPlayCount(
 
 	return err
 }
+
+func (r *SongRepository) GetAll(ctx context.Context) ([]model.SoundSong, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT
+			s.id,
+			s.artist_id,
+			s.album_id,
+			s.category_id,
+			s.title,
+			s.description,
+			s.audio_url,
+			s.cover_image_url,
+			s.duration_seconds,
+			s.release_date,
+			s.featured,
+			s.status,
+			s.play_count,
+			s.created_at,
+			s.updated_at
+		FROM sound_songs s
+		JOIN sound_artists a ON a.id = s.artist_id
+		
+		ORDER BY s.created_at DESC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var songs []model.SoundSong
+
+	for rows.Next() {
+		var song model.SoundSong
+
+		err := rows.Scan(
+			&song.ID,
+			&song.ArtistID,
+			&song.AlbumID,
+			&song.CategoryID,
+			&song.Title,
+			&song.Description,
+			&song.AudioURL,
+			&song.CoverImageURL,
+			&song.DurationSeconds,
+			&song.ReleaseDate,
+			&song.Featured,
+			&song.Status,
+			&song.PlayCount,
+			&song.CreatedAt,
+			&song.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		songs = append(songs, song)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return songs, nil
+}
+
