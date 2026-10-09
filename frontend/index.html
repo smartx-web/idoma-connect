@@ -23,58 +23,14 @@
     href="css/home-spotlight.css"
 >
 
+<link rel="stylesheet" href="css/refined.css">
 </head>
 
 <body>
 
 <!-- ================= NAVIGATION ================= -->
 
-<header class="navbar">
-
-<div class="logo">
-
-    <h2>
-        IDOMA<span>-CONNECT</span>
-    </h2>
-
-    <small>
-        The Digital Gateway to Idoma Land
-    </small>
-
-</div>
-
-
-<nav>
-
-   <nav>
-
-    <a href="index.html">
-        Home
-    </a>
-
-    <a href="businesses.html">
-        Businesses
-    </a>
-
-    <a href="hall-of-fame.html">
-        Hall of Fame
-    </a>
-
-    <a href="heritage.html">
-        Heritage
-    </a>
-
-    <a href="ask-elder.html">
-        Ask an Elder
-    </a>
-
-    <a href="#about">
-        About
-    </a>
-
-</nav>
-
-</header>
+<header class="navbar"><a class="logo" href="index.html"><h2>IDOMA<span>-CONNECT</span></h2><small>The Digital Gateway to Idoma Land</small></a><nav aria-label="Main navigation"><a href="index.html">Home</a><a href="businesses.html">Businesses</a><a href="heritage.html">Heritage</a><a href="idoma-sounds.html">Sounds</a><a href="hall-of-fame.html">Hall of Fame</a><a href="ask-elder.html">Ask an Elder</a></nav></header>
 
 
 <!-- ================= HOMEPAGE SPOTLIGHT ================= -->
@@ -109,7 +65,7 @@
 
             <input
                 type="text"
-                id="homeSearch"
+                aria-label="Search businesses, places or services" id="homeSearch"
                 placeholder="Search businesses, places or services..."
             >
 
@@ -297,6 +253,7 @@ function searchFromHome() {
 </script>
 
 
+<div class="region-strip"><span>ROOTED IN OUR COMMUNITIES</span><p>Otukpo · Apa · Agatu · Ado · Ogbadibo · Ohimini · Oju · Okpokwu · Obi</p></div>
 <!-- ================= EXPLORE ================= -->
 
 <section
@@ -323,6 +280,7 @@ function searchFromHome() {
     <!-- ================= BUSINESSES ================= -->
 
     <div
+        role="link" tabindex="0" onkeydown="if(event.key==='Enter') this.click()"
         class="card"
         onclick="window.location.href='businesses.html'"
     >
@@ -350,6 +308,7 @@ function searchFromHome() {
     <!-- ================= HERITAGE ================= -->
 
     <div
+        role="link" tabindex="0" onkeydown="if(event.key==='Enter') this.click()"
         class="card"
         onclick="window.location.href='heritage.html'"
     >
@@ -406,6 +365,7 @@ function searchFromHome() {
     <!-- ================= IDOMA SOUNDS ================= -->
 
     <div
+        role="link" tabindex="0" onkeydown="if(event.key==='Enter') this.click()"
         class="card"
        onclick="window.location.href='idoma-sounds.html'"
     >
@@ -433,6 +393,7 @@ function searchFromHome() {
     <!-- ================= HALL OF FAME ================= -->
 
     <div
+        role="link" tabindex="0" onkeydown="if(event.key==='Enter') this.click()"
         class="card"
         onclick="window.location.href='hall-of-fame.html'"
     >
