@@ -8,6 +8,21 @@ The project began as a directory-focused platform and is evolving into a long-te
 
 ---
 
+## Live Website
+
+| Resource | URL |
+|---|---|
+| Public website | https://idoma-connect.onrender.com |
+| Idoma Sounds | https://idoma-connect.onrender.com/idoma-sounds.html |
+| Backend health check | https://idoma-connect-api.onrender.com/api/v1/health |
+| API base URL | https://idoma-connect-api.onrender.com/api/v1 |
+
+The frontend is hosted as a Render Static Site; the Go API runs as a separate Render Web Service connected to Neon PostgreSQL. Both deploy from the GitHub `main` branch with auto-deploy enabled.
+
+Deployment checks on 9 October 2026 confirmed that the home page, Sounds page and shared assets returned HTTP 200, and that the business API allowed requests from the public website. This is an initial public deployment; production hardening and monitoring remain ongoing.
+
+---
+
 ## 🌍 Vision
 
 To build a trusted digital gateway to Idoma Land — connecting people with businesses, places, culture, history, events, and opportunities while preserving the identity and heritage of the Idoma people.
@@ -175,6 +190,33 @@ The project also aims to interface with prominent Idoma sons and daughters on te
 
 ---
 
+## 7. Idoma Sounds
+
+The public Sounds page connects to the Go API and provides:
+
+* Songs, artists, albums and cultural recordings in separate views.
+* Text search across loaded titles, artists, descriptions and communities.
+* Category filtering for songs and cultural recordings.
+* Artist-to-song discovery.
+* Native browser audio controls where a valid audio URL is supplied, with one recording playing at a time.
+* Loading, empty, retry and playback-error states.
+
+The page displays API data rather than placeholder music cards. Approved songs, artists and albums, and published cultural recordings must exist in the database to populate it. The songs endpoint returned no published songs during the initial integration check. Uploading content, moderation interfaces and richer playback features remain follow-up work.
+
+## 8. Frontend Design
+
+The shared visual refresh retains the red-and-black identity, with updated typography, spacing, cards and mobile navigation. Public pages load `frontend/css/refined.css` after their existing styles.
+
+JavaScript syntax checks passed for the new Sounds integration. Full browser layout and interaction validation remains outstanding because the browser download failed during implementation.
+
+## 9. Ask an Elder — Deployment Pending
+
+The IDOMA-CONNECT page exists, but still targets `http://localhost:8000`. Its separate FastAPI backend lives in the private `akatuworthy-eng/ASK-AN-ELDER` repository. Render repository access and the archive service deployment are pending; the public website cannot yet use this local service.
+
+That backend needs its own archive database configuration and JWT secret. Do not assume the business directory database contains the archive schema.
+
+---
+
 # 🏗️ Technology Stack
 
 ## Frontend
@@ -201,6 +243,12 @@ The project also aims to interface with prominent Idoma sons and daughters on te
 ## Media
 
 * Cloudinary
+
+## Hosting
+
+* Render Static Site for the frontend
+* Render Web Service for the Go API
+* Neon PostgreSQL for the main application database
 
 ## Development Environment
 
@@ -236,6 +284,7 @@ idoma-connect/
 │   │   │
 │   │   ├── lga/
 │   │   ├── premium/
+│   │   ├── sound/
 │   │   └── router/
 │   │
 │   ├── .env
@@ -247,6 +296,7 @@ idoma-connect/
 │   ├── css/
 │   ├── js/
 │   ├── images/
+│   ├── idoma-sounds.html
 │   ├── happenings.html
 │   └── index.html
 │
@@ -405,6 +455,28 @@ GET /api/v1/premium
 
 ---
 
+## Idoma Sounds endpoints
+
+```http
+GET  /api/v1/sounds/categories
+GET  /api/v1/sounds/categories/:id
+GET  /api/v1/sounds/artists
+GET  /api/v1/sounds/artists/:id
+GET  /api/v1/sounds/albums
+GET  /api/v1/sounds/artists/:id/albums
+GET  /api/v1/sounds/songs
+GET  /api/v1/sounds/songs/featured
+GET  /api/v1/sounds/songs/category/:id
+GET  /api/v1/sounds/songs/:id
+POST /api/v1/sounds/songs/:id/play
+GET  /api/v1/sounds/cultural-recordings
+POST /api/v1/sounds/submissions
+```
+
+The Sounds page uses the collection endpoints and renders their `data` arrays. It does not currently call the play-count endpoint.
+
+---
+
 # 🔐 Protected Admin Endpoints
 
 All endpoints below require a valid administrator JWT.
@@ -528,7 +600,13 @@ go test ./...
 
 ## 5. Start the backend
 
-Run the backend using the project's configured entry point.
+From the backend directory:
+
+```bash
+go run ./cmd/api
+```
+
+The server uses the `PORT` environment variable, defaulting to `8080` when unset.
 
 The API is expected to run locally on:
 
@@ -551,6 +629,30 @@ The frontend is then available at:
 
 http://localhost:5500
 
+**API selection:** the main frontend scripts currently point to the hosted Render API, including when served locally. Running the local Go server does not switch those URLs automatically. To test against your local API, replace the hosted API base in the relevant scripts with `http://localhost:8080/api/v1`. Ask an Elder uses its separate endpoint.
+
+The Go API allows browser requests from `http://localhost:5500`, `http://127.0.0.1:5500` and the public frontend origin.
+
+
+---
+
+# Deployment Configuration
+
+| Service | Build command | Start command / publish directory |
+|---|---|---|
+| Go API | `cd backend && go build -o ../idoma-connect-api ./cmd/api` | `./idoma-connect-api` |
+| Static frontend | `true` (no build step required) | `frontend` |
+
+Configure these secrets in the **API service's Render environment settings**, or in an environment group linked to that service:
+
+* `DATABASE_URL` — the Neon PostgreSQL connection URL.
+* `JWT_SECRET` — a strong signing secret.
+* `ADMIN_USERNAME` — administrator login name.
+* `ADMIN_PASSWORD_HASH` — the bcrypt hash, not the plain password.
+
+Render supplies `PORT`; the API listener uses it. The API was configured with `GIN_MODE=release` and `GOTOOLCHAIN=auto`. Secrets belong on the backend and must never be added to frontend JavaScript or committed to GitHub.
+
+If an environment group is used, confirm it is linked to the correct service. An empty service-level variable can override a group value.
 
 ---
 
@@ -608,6 +710,9 @@ IDOMA-CONNECT is currently under active development.
 * [x] Heritage pages
 * [x] Festival pages
 * [x] Hall of Fame foundation
+* [x] Initial public frontend and backend deployment
+* [x] Shared red-and-black UI refresh
+* [x] Idoma Sounds API-backed browsing, search, filters and audio controls
 
 ### In Development
 
@@ -616,10 +721,10 @@ IDOMA-CONNECT is currently under active development.
 * [ ] Richer business profiles
 * [ ] Reviews and community interaction
 * [ ] Ask an Elder
-* [ ] Idoma Sounds
+* [ ] Idoma Sounds content population, upload/moderation UI and expanded playback
 * [ ] Expanded Hall of Fame
 * [ ] More heritage and historical content
-* [ ] Production deployment
+* [ ] Full browser layout and interaction validation
 * [ ] Production security hardening
 * [ ] Analytics and monitoring
 
