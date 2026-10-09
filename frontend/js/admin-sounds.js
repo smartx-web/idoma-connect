@@ -43,13 +43,15 @@ async function refresh() {
  if (results[0].status === 'fulfilled') {
   artists = results[0].value.data || [];
   const select = document.getElementById('artistId'); const selected = select.value;
-  select.replaceChildren(new Option('Choose an artist',''));
+  select.replaceChildren(new Option(artists.length ? 'Choose an artist' : 'No artists yet — create one first',''));
+  select.disabled = artists.length === 0;
   const list = document.getElementById('artistList'); list.replaceChildren();
   for (const artist of artists) {
    select.add(new Option((artist.stage_name || artist.name) + ' (' + artist.status + ')', artist.id));
    const row = el('article',''); row.append(el('h3',artist.stage_name || artist.name),el('p',artist.status)); controls(row,'artists',artist); list.append(row);
   }
-  select.value = selected;
+  select.value = artists.some(a => String(a.id) === selected) ? selected : '';
+  if (!artists.length) list.append(el('p','Create your first artist using the form above. It will then be available in the song selector.'));
  } else tell('Could not load artists: ' + results[0].reason.message);
  const list = document.getElementById('songList'); list.replaceChildren();
  if (results[1].status === 'fulfilled') {
@@ -81,8 +83,9 @@ bindForm('artistForm',async form => {
  tell('Saving artist…');
  const name = document.getElementById('artistName').value.trim();
  if (!name) throw Error('Enter an artist name.');
- await api('/admin/sounds/artists','POST',{name,stage_name:document.getElementById('stageName').value.trim(),biography:document.getElementById('biography').value.trim()});
+ const created = await api('/admin/sounds/artists','POST',{name,stage_name:document.getElementById('stageName').value.trim(),biography:document.getElementById('biography').value.trim()});
  form.reset(); tell('Artist saved as pending. Approve it below.'); await refresh();
+ if (created.data?.id) document.getElementById('artistId').value = String(created.data.id);
 });
 bindForm('songForm',async form => {
  const title = document.getElementById('title').value.trim();
