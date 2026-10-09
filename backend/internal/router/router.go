@@ -25,6 +25,7 @@ func SetupRouter(db *pgxpool.Pool) *gin.Engine {
 	router.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
 			"http://localhost:5500",
+			"https://idoma-connect.onrender.com",
 			"http://127.0.0.1:5500",
 		},
 		AllowMethods: []string{
